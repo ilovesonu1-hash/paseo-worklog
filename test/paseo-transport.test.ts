@@ -54,6 +54,15 @@ class FakeClient implements NativeClient {
     this.calls.push(request);
     return request;
   }
+  updateCalls: Array<{ kind: "preview" | "apply"; input: unknown }> = [];
+  async previewPluginUpdates(options?: { pluginId?: string }): Promise<unknown> {
+    this.updateCalls.push({ kind: "preview", input: options });
+    return [];
+  }
+  async applyPluginUpdates(proposals: unknown[]): Promise<unknown> {
+    this.updateCalls.push({ kind: "apply", input: proposals });
+    return [];
+  }
 }
 
 function harness() {
@@ -143,6 +152,21 @@ test("coalesces callers, routes through the local daemon, and restricts RPC to W
     await assert.rejects(first.rpc("other:method", {}), hasCode("INVALID_RPC_METHOD"));
     assert.equal(h.remotes[0].calls.length, 1);
   } finally { await transport.close(); }
+});
+
+test("plugin updates are scoped to Worklog on the verified host and stop after close", async () => {
+  const h = harness();
+  const transport = createPaseoTransport({}, h.runtime);
+  const local = await transport.local();
+  await local.updates.preview();
+  await local.updates.apply([{ proposal: 1 }]);
+  assert.deepEqual(h.locals[0].updateCalls, [
+    { kind: "preview", input: { pluginId: "worklog-board" } },
+    { kind: "apply", input: [{ proposal: 1 }] },
+  ]);
+  await transport.close();
+  await assert.rejects(local.updates.apply([]), hasCode("TRANSPORT_CLOSED"));
+  assert.equal(h.locals[0].updateCalls.length, 2);
 });
 
 test("rejects a mismatched authenticated remote identity and can retry cleanly", async () => {

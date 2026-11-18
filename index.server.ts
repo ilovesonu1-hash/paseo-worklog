@@ -10,12 +10,17 @@ import { WorkerStore } from "./server/worker-store.ts";
 import { createPaseoTransport } from "./server/paseo-transport.ts";
 import { WorklogRuntime } from "./server/runtime.ts";
 import { configureRuntimeRpc, dismissDeliveryRpc, exchangeRpc, readRosterRpc, refreshRuntimeRpc, runtimeStatusRpc } from "./shared/sync.ts";
+import { applyUpdateRpc, checkUpdateRpc, updateStatusRpc } from "./shared/updates.ts";
+import { PluginUpdater } from "./server/updates.ts";
 
 export default function contribute(server: PluginServerContext) {
   const dataDirectory = prepareDataDirectory();
   const store = new WorklogStore(join(dataDirectory, "worklog.sqlite"));
   const worker = new WorkerStore(join(dataDirectory, "worker-outbox.sqlite"));
-  const runtime = new WorklogRuntime(store, worker, createPaseoTransport());
+  const transport = createPaseoTransport();
+  const runtime = new WorklogRuntime(store, worker, transport);
+  // Separate from the collection cycle: a GitHub or network failure never sets runtime.error.
+  const updater = new PluginUpdater({ local: () => transport.local(), statePath: join(dataDirectory, "update-state.json") });
   const requireCentral = () => {
     if (worker.readConfig().config.role !== "central") throw new Error("이 호스트는 수집·보고 모드입니다. 작업 편집은 중앙 Worklog에서 진행하세요.");
   };
@@ -34,6 +39,12 @@ export default function contribute(server: PluginServerContext) {
   server.handle(runtimeStatusRpc, () => runtime.status());
   server.handle(configureRuntimeRpc, ({ expectedRevision, config }) => runtime.configure(expectedRevision, config));
   server.handle(refreshRuntimeRpc, () => runtime.refresh());
+  server.handle(updateStatusRpc, () => updater.status());
+  server.handle(checkUpdateRpc, () => updater.check());
+  server.handle(applyUpdateRpc, ({ targetRevision }) => {
+    if (worker.readConfig().config.role !== "central") throw new Error("Worklog 업데이트는 중앙 보드에서만 실행합니다.");
+    return updater.apply(targetRevision);
+  });
   server.handle(dismissDeliveryRpc, ({ deliveryId }) => worker.dismiss(deliveryId));
   server.handle(exchangeRpc, async (input, { paseo }) => {
     const { self } = await paseo.hosts.list();
@@ -55,8 +66,11 @@ export default function contribute(server: PluginServerContext) {
     return { ...request, tools: [...request.tools, ...tools] };
   });
   runtime.start();
+  updater.start();
   return async () => {
     removeHook();
+    // Before the transport closes, so a lost apply response is left for the next instance.
+    updater.stop();
     try { await runtime.stop(); }
     finally { worker.close(); store.close(); }
   };

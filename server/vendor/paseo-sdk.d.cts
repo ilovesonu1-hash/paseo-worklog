@@ -26,6 +26,9 @@ declare class NativeDaemonClient {
   requireConnectedHosts(): void;
   getLastServerInfoMessage(): { serverId: string; hostname?: string | null } | null;
   invokePluginRpc(pluginId: string, method: string, input: unknown): Promise<unknown>;
+  /** Throws "Update the host to review plugin updates." unless server_info.features.pluginSourceUpdates. */
+  previewPluginUpdates(options?: { pluginId?: string }): Promise<unknown>;
+  applyPluginUpdates(proposals: unknown[]): Promise<unknown>;
 }
 declare const sdk: {
   createHostClient(connection: string, config: ClientConfig): NativeDaemonClient;

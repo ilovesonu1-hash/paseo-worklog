@@ -16,6 +16,11 @@ export interface PaseoConnection {
   paseo: PaseoApi;
   /** Only this plugin's RPC namespace is exposed. */
   rpc(method: string, input: unknown): Promise<unknown>;
+  /** Paseo's own source-update review for this plugin's installation on that host. Raw, unvalidated responses. */
+  updates: {
+    preview(): Promise<unknown>;
+    apply(proposals: unknown[]): Promise<unknown>;
+  };
 }
 
 export interface PaseoTransport {
@@ -195,6 +200,22 @@ export function createPaseoTransport(
           assertActive(entry);
           verifyIdentity(client, expectedId);
           return client.invokePluginRpc(PLUGIN_ID, method, input);
+        },
+        updates: {
+          async preview() {
+            assertActive(entry);
+            await client.connect();
+            assertActive(entry);
+            verifyIdentity(client, expectedId);
+            return client.previewPluginUpdates({ pluginId: PLUGIN_ID });
+          },
+          async apply(proposals) {
+            assertActive(entry);
+            await client.connect();
+            assertActive(entry);
+            verifyIdentity(client, expectedId);
+            return client.applyPluginUpdates(proposals);
+          },
         },
       },
     };

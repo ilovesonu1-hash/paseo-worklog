@@ -1,6 +1,6 @@
 # Third-party licenses and acknowledgements
 
-This notice applies to Worklog **0.2.2**. Worklog's original implementation is
+This notice applies to Worklog **0.3.0**. Worklog's original implementation is
 covered by the [root MIT license](LICENSE). Third-party components retain their
 own licenses; the root license does not replace them.
 

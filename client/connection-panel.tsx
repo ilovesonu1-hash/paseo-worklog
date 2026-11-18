@@ -8,6 +8,7 @@ import type { ConfigSnapshot, RuntimeStatus, SyncConfig } from "../shared/sync";
 import { Banner, Body, Button, Chip, Drawer, Empty, Field, HostHealthList } from "./components";
 import type { Colors } from "./components";
 import { dateLabel, errorMessage, shortAge } from "./presentation";
+import { UpdateSection } from "./update-section";
 
 function copyConfig(config: SyncConfig): SyncConfig { return { ...config, remoteHostIds: [...config.remoteHostIds] }; }
 function configEquals(a: SyncConfig, b: SyncConfig): boolean {
@@ -168,6 +169,9 @@ export function ConnectionPanel({ runtime, hostId, colors, compact, onClose }: {
       {runtime.error ? <Banner colors={colors} danger>{runtime.error}</Banner> : null}
     </View>
     <HostHealthList hosts={runtime.roster.hosts} colors={colors} showIds />
+    <View style={{ height: 1, backgroundColor: colors.border }} />
+    <UpdateSection hostId={hostId} central={runtime.snapshot.config.role === "central"} colors={colors} />
+    <View style={{ height: 1, backgroundColor: colors.border }} />
     <View style={{ gap: 7 }}><Text style={{ color: colors.foreground, fontSize: 13, fontWeight: "700" }}>PC 연결 순서</Text>
       <Body colors={colors} muted style={{ fontSize: 12 }}>1. 각 PC에 Worklog 플러그인을 설치합니다.{"\n"}2. 작업을 모을 PC를 중앙 보드로 둡니다.{"\n"}3. 다른 PC는 수집·보고 호스트로 바꾸고 중앙 서버 ID를 저장합니다.{"\n"}4. 중앙 Paseo의 Connected Hosts에서 다른 PC를 연결하고, 위 목록에서 수집할 호스트로 선택합니다.</Body>
       <Body colors={colors} muted style={{ fontSize: 11 }}>Paseo의 기존 호스트 연결을 사용합니다. 수집과 보고 처리는 앱 화면을 닫아도 데몬에서 이어집니다.</Body>

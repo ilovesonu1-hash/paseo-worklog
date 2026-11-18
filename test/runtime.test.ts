@@ -121,6 +121,7 @@ function fixture(t: TestContext, remoteIds: string[] = []) {
         const perform = () => peer.worker.exchange(input, peer.id);
         return peer.exchange ? peer.exchange(input, perform) : perform();
       },
+      updates: { preview: async () => [], apply: async () => [] },
     };
     connections.set(peer.id, current);
     return current;
