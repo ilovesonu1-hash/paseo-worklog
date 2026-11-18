@@ -50,6 +50,26 @@ Paseo 관련 기준은 [v0.15.4 릴리스](https://github.com/getpaseo/paseo/rel
 
 Worklog는 Paseo의 기존 페어링·TCP·SSH 등 지원되는 연결을 사용합니다. 별도의 HTTP 서버나 새 수신 포트를 만들지 않습니다. 원격 플러그인 RPC에는 Paseo의 기존 **`daemon.manage` 권한**이 필요합니다. 제한된 페어링에 이 권한이 없으면 보고 연결을 수행할 수 없으므로 Paseo에서 해당 연결의 권한을 확인하세요.
 
+## GitHub에서 설치 (권장)
+
+공개 저장소 <https://github.com/ilovesonu1-hash/paseo-worklog>에서 바로 설치합니다. **중앙 PC와 참여할 원격 PC 각각에서** 실행합니다. 먼저 아래 "1. 플러그인 기능 확인"대로 `pluginsEnabled`가 켜져 있는지 확인하세요.
+
+```text
+paseo plugin install https://github.com/ilovesonu1-hash/paseo-worklog --id worklog-board
+paseo plugin ls worklog-board
+```
+
+Windows에서 `paseo`가 PATH에 없으면 `%LOCALAPPDATA%\Programs\Paseo\resources\bin\paseo.cmd`를 사용합니다. 저장소에 빌드된 SDK가 들어 있어 `npm` 설치나 빌드 단계가 없습니다. Paseo가 저장소를 자신의 플러그인 폴더에 받아 두므로 따로 둘 소스 폴더가 필요하지 않습니다.
+
+새 커밋이 올라오면 각 PC에서 다음 명령으로 확인하고 적용합니다.
+
+```text
+paseo plugin update worklog-board --check
+paseo plugin update worklog-board
+```
+
+**이미 ZIP(로컬 폴더)으로 설치한 PC:** `paseo plugin remove worklog-board` 후 위 설치 명령을 실행합니다. 작업 데이터(`plugin-data/worklog-board`)는 `remove`로 지워지지 않으며 같은 ID로 다시 설치하면 이어서 사용합니다. 그래도 먼저 JSON으로 내보내거나 그 폴더를 복사해 두세요. 2026-11-18 Paseo 0.16.1에서 이 전환과 데이터 유지(작업·세션·활동 건수 동일)를 확인했습니다.
+
 ## ZIP에서 설치
 
 아래 절차를 **중앙 PC와 참여할 원격 PC 각각에서** 실행합니다. ZIP 안에 `paseo-worklog/` 폴더가 있고, 그 안에 `paseo-plugin.json`이 있는 구성입니다.
