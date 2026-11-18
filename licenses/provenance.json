@@ -1,0 +1,176 @@
+{
+  "worklogVersion": "0.2.2",
+  "bundle": "server/vendor/paseo-sdk.cjs",
+  "bundleSha256": "90a6e5dbad4f51da49723af185c85372222ae8031f5a2c42d0de2e438f4355ba",
+  "metadata": "server/vendor/paseo-sdk.meta.json",
+  "metadataSha256": "0a4eb70c9a961b1bff4d411001708b9b30c911bad5c5bf32db3aa35953ba9c81",
+  "packages": [
+    {
+      "package": "@getpaseo/client",
+      "version": "0.15.4",
+      "license": "Apache-2.0",
+      "licenseFile": "licenses/paseo-0.15.4-LICENSE.txt",
+      "sha256": "79d5aedce6aa0adc547336dc1bd34c5cc9308ba110fac7079ed97515ee573ad3",
+      "repository": "https://github.com/getpaseo/paseo/tree/v0.15.4",
+      "source": "https://github.com/getpaseo/paseo/blob/v0.15.4/LICENSE",
+      "sourceGitBlob": "2f5903143b08de0aa991ab535d9582aca6b9b44a",
+      "inputFiles": 22,
+      "emittedFiles": 21,
+      "bytesInOutput": 160198
+    },
+    {
+      "package": "@getpaseo/protocol",
+      "version": "0.15.4",
+      "license": "Apache-2.0",
+      "licenseFile": "licenses/paseo-0.15.4-LICENSE.txt",
+      "sha256": "79d5aedce6aa0adc547336dc1bd34c5cc9308ba110fac7079ed97515ee573ad3",
+      "repository": "https://github.com/getpaseo/paseo/tree/v0.15.4",
+      "source": "https://github.com/getpaseo/paseo/blob/v0.15.4/LICENSE",
+      "sourceGitBlob": "2f5903143b08de0aa991ab535d9582aca6b9b44a",
+      "inputFiles": 42,
+      "emittedFiles": 38,
+      "bytesInOutput": 4610916
+    },
+    {
+      "package": "@getpaseo/relay",
+      "version": "0.15.4",
+      "license": "Apache-2.0",
+      "licenseFile": "licenses/paseo-0.15.4-LICENSE.txt",
+      "sha256": "79d5aedce6aa0adc547336dc1bd34c5cc9308ba110fac7079ed97515ee573ad3",
+      "repository": "https://github.com/getpaseo/paseo/tree/v0.15.4",
+      "source": "https://github.com/getpaseo/paseo/blob/v0.15.4/LICENSE",
+      "sourceGitBlob": "2f5903143b08de0aa991ab535d9582aca6b9b44a",
+      "inputFiles": 10,
+      "emittedFiles": 8,
+      "bytesInOutput": 21366
+    },
+    {
+      "package": "@noble/ciphers",
+      "version": "2.4.0",
+      "license": "MIT",
+      "licenseFile": "licenses/noble-ciphers-2.4.0-LICENSE.txt",
+      "sha256": "f36671a5487c9c5050efacb58011c37c24c55a889803cb036cf9d9a6347c1e2d",
+      "repository": "https://github.com/paulmillr/noble-ciphers",
+      "source": "node_modules/@noble/ciphers/LICENSE",
+      "inputFiles": 4,
+      "emittedFiles": 4,
+      "bytesInOutput": 11233
+    },
+    {
+      "package": "@noble/curves",
+      "version": "2.4.0",
+      "license": "MIT",
+      "licenseFile": "licenses/noble-curves-2.4.0-LICENSE.txt",
+      "sha256": "4f221aee6e072336700c408c68ab3b96a3fc09f6aebe6f48f1bd99e5ef13faec",
+      "repository": "https://github.com/paulmillr/noble-curves",
+      "source": "node_modules/@noble/curves/LICENSE",
+      "inputFiles": 10,
+      "emittedFiles": 6,
+      "bytesInOutput": 23209
+    },
+    {
+      "package": "@noble/hashes",
+      "version": "2.4.0",
+      "license": "MIT",
+      "licenseFile": "licenses/noble-hashes-2.4.0-LICENSE.txt",
+      "sha256": "4f221aee6e072336700c408c68ab3b96a3fc09f6aebe6f48f1bd99e5ef13faec",
+      "repository": "https://github.com/paulmillr/noble-hashes",
+      "source": "node_modules/@noble/hashes/LICENSE",
+      "inputFiles": 5,
+      "emittedFiles": 5,
+      "bytesInOutput": 8249
+    },
+    {
+      "package": "base64-js",
+      "version": "1.5.1",
+      "license": "MIT",
+      "licenseFile": "licenses/base64-js-1.5.1-LICENSE.txt",
+      "sha256": "5b37224c080cdcc97c871ada971c224e9926370fe74f11b539aa1cf9f3b1aca1",
+      "repository": "https://github.com/beatgammit/base64-js",
+      "source": "node_modules/base64-js/LICENSE",
+      "inputFiles": 1,
+      "emittedFiles": 1,
+      "bytesInOutput": 1470
+    },
+    {
+      "package": "tweetnacl",
+      "version": "1.0.3",
+      "license": "Unlicense",
+      "licenseFile": "licenses/tweetnacl-1.0.3-LICENSE.txt",
+      "sha256": "88d9b4eb60579c191ec391ca04c16130572d7eedc4a86daa58bf28c6e14c9bcd",
+      "repository": "https://github.com/dchest/tweetnacl-js",
+      "source": "node_modules/tweetnacl/LICENSE",
+      "inputFiles": 1,
+      "emittedFiles": 1,
+      "bytesInOutput": 35766
+    },
+    {
+      "package": "ws",
+      "version": "8.22.2",
+      "license": "MIT",
+      "licenseFile": "licenses/ws-8.22.2-LICENSE.txt",
+      "sha256": "2b29dcfe0d6471f7e8c92c5fb38c9f93edee10330937055440192f1832b1ecef",
+      "repository": "https://github.com/websockets/ws",
+      "source": "node_modules/ws/LICENSE",
+      "inputFiles": 14,
+      "emittedFiles": 14,
+      "bytesInOutput": 48181
+    }
+  ],
+  "sourceNoticesFile": "licenses/BUNDLED_SOURCE_NOTICES.txt",
+  "sourceNoticeInputs": [
+    "node_modules/tweetnacl/nacl-fast.js",
+    "node_modules/@noble/curves/utils.js",
+    "node_modules/@noble/curves/abstract/modular.js",
+    "node_modules/@noble/curves/abstract/curve.js",
+    "node_modules/@noble/curves/abstract/edwards.js",
+    "node_modules/@noble/curves/abstract/montgomery.js",
+    "node_modules/@noble/curves/ed25519.js",
+    "node_modules/@noble/ciphers/utils.js"
+  ],
+  "upstreamNoticeCheck": {
+    "ref": "v0.15.4",
+    "directories": [
+      "/",
+      "packages/client",
+      "packages/protocol",
+      "packages/relay"
+    ],
+    "separateNoticeFilePresent": false,
+    "sources": [
+      "https://api.github.com/repos/getpaseo/paseo/contents?ref=v0.15.4",
+      "https://api.github.com/repos/getpaseo/paseo/contents/packages/client?ref=v0.15.4",
+      "https://api.github.com/repos/getpaseo/paseo/contents/packages/protocol?ref=v0.15.4",
+      "https://api.github.com/repos/getpaseo/paseo/contents/packages/relay?ref=v0.15.4"
+    ]
+  },
+  "bundleBytes": 4922057,
+  "externalImports": [
+    "buffer",
+    "crypto",
+    "events",
+    "http",
+    "https",
+    "net",
+    "node:child_process",
+    "node:net",
+    "node:os",
+    "querystring",
+    "stream",
+    "tls",
+    "url",
+    "util",
+    "zlib",
+    "zod"
+  ],
+  "sourceNoticesSha256": "b9055c2d8a5702bba2f1c4861876320d18b8b92ddfd550be65164eeeefaf8fd8",
+  "additionalNotices": [
+    {
+      "package": "tweetnacl",
+      "version": "1.0.3",
+      "source": "node_modules/tweetnacl/AUTHORS.md",
+      "file": "licenses/tweetnacl-1.0.3-AUTHORS.md",
+      "sha256": "64062ae412dbb0bcbec2ff3066d379d9d5656ea18bd3035d642436b1321fe117"
+    }
+  ]
+}

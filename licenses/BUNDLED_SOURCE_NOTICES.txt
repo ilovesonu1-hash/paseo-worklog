@@ -1,0 +1,60 @@
+Original source notices from emitted inputs of server/vendor/paseo-sdk.cjs.
+Only input files with nonzero bytesInOutput in server/vendor/paseo-sdk.meta.json are included.
+The comments below are reproduced from the installed package versions without rewriting their attribution text.
+Complete package licenses accompany this file.
+
+SOURCE: node_modules/tweetnacl/nacl-fast.js
+
+// Ported in 2014 by Dmitry Chestnykh and Devi Mandiri.
+// Public domain.
+//
+// Implementation derived from TweetNaCl version 20140427.
+// See for details: http://tweetnacl.cr.yp.to/
+
+
+/*
+* Port of Andrew Moon's Poly1305-donna-16. Public domain.
+* https://github.com/floodyberry/poly1305-donna
+*/
+
+--------------------
+
+SOURCE: node_modules/@noble/curves/utils.js
+
+/*! noble-curves - MIT License (c) 2022 Paul Miller (paulmillr.com) */
+
+--------------------
+
+SOURCE: node_modules/@noble/curves/abstract/modular.js
+
+/*! noble-curves - MIT License (c) 2022 Paul Miller (paulmillr.com) */
+
+--------------------
+
+SOURCE: node_modules/@noble/curves/abstract/curve.js
+
+/*! noble-curves - MIT License (c) 2022 Paul Miller (paulmillr.com) */
+
+--------------------
+
+SOURCE: node_modules/@noble/curves/abstract/edwards.js
+
+/*! noble-curves - MIT License (c) 2022 Paul Miller (paulmillr.com) */
+
+--------------------
+
+SOURCE: node_modules/@noble/curves/abstract/montgomery.js
+
+/*! noble-curves - MIT License (c) 2022 Paul Miller (paulmillr.com) */
+
+--------------------
+
+SOURCE: node_modules/@noble/curves/ed25519.js
+
+/*! noble-curves - MIT License (c) 2022 Paul Miller (paulmillr.com) */
+
+--------------------
+
+SOURCE: node_modules/@noble/ciphers/utils.js
+
+/*! noble-ciphers - MIT License (c) 2023 Paul Miller (paulmillr.com) */

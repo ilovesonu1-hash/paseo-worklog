@@ -1,0 +1,47 @@
+{
+  "name": "paseo-worklog-board",
+  "version": "0.2.2",
+  "private": true,
+  "type": "module",
+  "description": "A personal task board and durable work journal inside Paseo, with connected-host session collection.",
+  "license": "MIT",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "build:sdk": "node scripts/build-paseo-sdk.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "node --experimental-strip-types --test test/*.test.ts",
+    "check": "npm run typecheck && npm test"
+  },
+  "files": [
+    "paseo-plugin.json",
+    "index.client.tsx",
+    "index.server.ts",
+    "client",
+    "server",
+    "shared",
+    "test",
+    "scripts",
+    "licenses",
+    "tsconfig.json",
+    "README.md",
+    "OVERVIEW.md",
+    "TESTING.md",
+    "LICENSE",
+    "THIRD_PARTY_NOTICES.md"
+  ],
+  "devDependencies": {
+    "@getpaseo/client": "0.15.4",
+    "@getpaseo/plugin": "0.15.4",
+    "@getpaseo/protocol": "0.15.4",
+    "@tanstack/react-query": "^5.90.0",
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.1.0",
+    "esbuild": "0.25.12",
+    "react": "19.1.0",
+    "react-native": "0.81.5",
+    "typescript": "~5.9.3",
+    "zod": "^4.4.3"
+  }
+}

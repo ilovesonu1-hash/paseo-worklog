@@ -1,0 +1,6 @@
+{
+  "id": "worklog-board",
+  "name": "Worklog",
+  "description": "할 일, 한 일, 다음 행동을 기록하고 여러 호스트의 Paseo 세션을 연결하는 작업 보드",
+  "requirements": { "paseo": ">=0.15.4" }
+}

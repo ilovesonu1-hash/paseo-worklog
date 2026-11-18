@@ -1,0 +1,2544 @@
+{
+  "inputs": {
+    "node_modules/@getpaseo/protocol/dist/agent-labels.js": {
+      "bytes": 1538,
+      "imports": [],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/protocol/dist/websocket-message-limit.js": {
+      "bytes": 329,
+      "imports": [],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/protocol/dist/binary-frames/host-route.js": {
+      "bytes": 1930,
+      "imports": [
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/websocket-message-limit.js",
+          "kind": "import-statement",
+          "original": "../websocket-message-limit.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/protocol/dist/agent-message.js": {
+      "bytes": 469,
+      "imports": [
+        {
+          "path": "zod",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/protocol/dist/hosts.js": {
+      "bytes": 4530,
+      "imports": [
+        {
+          "path": "zod",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/protocol/dist/plugin-registry.js": {
+      "bytes": 3941,
+      "imports": [
+        {
+          "path": "zod",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/protocol/dist/agent-profile.js": {
+      "bytes": 1434,
+      "imports": [
+        {
+          "path": "zod",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/protocol/dist/plugin-config.js": {
+      "bytes": 575,
+      "imports": [
+        {
+          "path": "zod",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/protocol/dist/terminal-profile.js": {
+      "bytes": 287,
+      "imports": [
+        {
+          "path": "zod",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/protocol/dist/terminal-activity.js": {
+      "bytes": 1121,
+      "imports": [
+        {
+          "path": "zod",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/protocol/dist/client-capabilities.js": {
+      "bytes": 3597,
+      "imports": [],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/protocol/dist/agent-lifecycle.js": {
+      "bytes": 162,
+      "imports": [],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/protocol/dist/agent-title-limits.js": {
+      "bytes": 97,
+      "imports": [],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/protocol/dist/provider-manifest.js": {
+      "bytes": 8357,
+      "imports": [
+        {
+          "path": "zod",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/protocol/dist/provider-config.js": {
+      "bytes": 4818,
+      "imports": [
+        {
+          "path": "zod",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/provider-manifest.js",
+          "kind": "import-statement",
+          "original": "./provider-manifest.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/protocol/dist/agent-types.js": {
+      "bytes": 1075,
+      "imports": [],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/protocol/dist/workspace-labels.js": {
+      "bytes": 418,
+      "imports": [],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/protocol/dist/chat/types.js": {
+      "bytes": 796,
+      "imports": [
+        {
+          "path": "zod",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/protocol/dist/chat/rpc-schemas.js": {
+      "bytes": 3343,
+      "imports": [
+        {
+          "path": "zod",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/chat/types.js",
+          "kind": "import-statement",
+          "original": "./types.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/protocol/dist/schedule/types.js": {
+      "bytes": 2496,
+      "imports": [
+        {
+          "path": "zod",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/provider-manifest.js",
+          "kind": "import-statement",
+          "original": "../provider-manifest.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/protocol/dist/schedule/rpc-schemas.js": {
+      "bytes": 5299,
+      "imports": [
+        {
+          "path": "zod",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/schedule/types.js",
+          "kind": "import-statement",
+          "original": "./types.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/protocol/dist/speech/rpc-schemas.js": {
+      "bytes": 6556,
+      "imports": [
+        {
+          "path": "zod",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/protocol/dist/loop/rpc-schemas.js": {
+      "bytes": 6067,
+      "imports": [
+        {
+          "path": "zod",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/provider-manifest.js",
+          "kind": "import-statement",
+          "original": "../provider-manifest.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/protocol/dist/browser-automation/rpc-schemas.js": {
+      "bytes": 16930,
+      "imports": [
+        {
+          "path": "zod",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/protocol/dist/browser-automation/capabilities.js": {
+      "bytes": 1211,
+      "imports": [
+        {
+          "path": "zod",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/browser-automation/rpc-schemas.js",
+          "kind": "import-statement",
+          "original": "./rpc-schemas.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/protocol/dist/paseo-config-schema.js": {
+      "bytes": 3772,
+      "imports": [
+        {
+          "path": "zod",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/protocol/dist/messages.js": {
+      "bytes": 255155,
+      "imports": [
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/agent-message.js",
+          "kind": "import-statement",
+          "original": "./agent-message.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/hosts.js",
+          "kind": "import-statement",
+          "original": "./hosts.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/plugin-registry.js",
+          "kind": "import-statement",
+          "original": "./plugin-registry.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/agent-profile.js",
+          "kind": "import-statement",
+          "original": "./agent-profile.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/agent-profile.js",
+          "kind": "import-statement",
+          "original": "./agent-profile.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/plugin-config.js",
+          "kind": "import-statement",
+          "original": "./plugin-config.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/plugin-config.js",
+          "kind": "import-statement",
+          "original": "./plugin-config.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/terminal-profile.js",
+          "kind": "import-statement",
+          "original": "./terminal-profile.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/terminal-profile.js",
+          "kind": "import-statement",
+          "original": "./terminal-profile.js"
+        },
+        {
+          "path": "zod",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/terminal-activity.js",
+          "kind": "import-statement",
+          "original": "./terminal-activity.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/client-capabilities.js",
+          "kind": "import-statement",
+          "original": "./client-capabilities.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/agent-lifecycle.js",
+          "kind": "import-statement",
+          "original": "./agent-lifecycle.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/agent-title-limits.js",
+          "kind": "import-statement",
+          "original": "./agent-title-limits.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/provider-manifest.js",
+          "kind": "import-statement",
+          "original": "./provider-manifest.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/provider-config.js",
+          "kind": "import-statement",
+          "original": "./provider-config.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/agent-types.js",
+          "kind": "import-statement",
+          "original": "./agent-types.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/workspace-labels.js",
+          "kind": "import-statement",
+          "original": "./workspace-labels.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/chat/rpc-schemas.js",
+          "kind": "import-statement",
+          "original": "./chat/rpc-schemas.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/schedule/rpc-schemas.js",
+          "kind": "import-statement",
+          "original": "./schedule/rpc-schemas.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/speech/rpc-schemas.js",
+          "kind": "import-statement",
+          "original": "./speech/rpc-schemas.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/loop/rpc-schemas.js",
+          "kind": "import-statement",
+          "original": "./loop/rpc-schemas.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/browser-automation/rpc-schemas.js",
+          "kind": "import-statement",
+          "original": "./browser-automation/rpc-schemas.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/browser-automation/capabilities.js",
+          "kind": "import-statement",
+          "original": "./browser-automation/capabilities.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/paseo-config-schema.js",
+          "kind": "import-statement",
+          "original": "./paseo-config-schema.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/protocol/dist/binary-frames/terminal.js": {
+      "bytes": 3629,
+      "imports": [
+        {
+          "path": "zod",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/messages.js",
+          "kind": "import-statement",
+          "original": "../messages.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/protocol/dist/binary-frames/file-transfer.js": {
+      "bytes": 3868,
+      "imports": [
+        {
+          "path": "zod",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/binary-frames/terminal.js",
+          "kind": "import-statement",
+          "original": "./terminal.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/protocol/dist/binary-frames/demux.js": {
+      "bytes": 1304,
+      "imports": [
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/binary-frames/host-route.js",
+          "kind": "import-statement",
+          "original": "./host-route.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/binary-frames/file-transfer.js",
+          "kind": "import-statement",
+          "original": "./file-transfer.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/binary-frames/terminal.js",
+          "kind": "import-statement",
+          "original": "./terminal.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/protocol/dist/binary-frames/index.js": {
+      "bytes": 161,
+      "imports": [
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/binary-frames/demux.js",
+          "kind": "import-statement",
+          "original": "./demux.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/binary-frames/file-transfer.js",
+          "kind": "import-statement",
+          "original": "./file-transfer.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/binary-frames/terminal.js",
+          "kind": "import-statement",
+          "original": "./terminal.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/binary-frames/host-route.js",
+          "kind": "import-statement",
+          "original": "./host-route.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/client/dist/daemon-client-transport-utils.js": {
+      "bytes": 4210,
+      "imports": [],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/protocol/dist/chunked-transport.js": {
+      "bytes": 7349,
+      "imports": [
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/websocket-message-limit.js",
+          "kind": "import-statement",
+          "original": "./websocket-message-limit.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/client/dist/legacy-usage-icons.js": {
+      "bytes": 9188,
+      "imports": [],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/client/dist/timeline-subscription/index.js": {
+      "bytes": 1821,
+      "imports": [],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/client/dist/provider-snapshots/index.js": {
+      "bytes": 2114,
+      "imports": [],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/client/dist/connection/owned.js": {
+      "bytes": 7492,
+      "imports": [],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/protocol/dist/agent-state-bucket.js": {
+      "bytes": 1133,
+      "imports": [],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/client/dist/connection/legacy-workspaces.js": {
+      "bytes": 6488,
+      "imports": [
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/messages.js",
+          "kind": "import-statement",
+          "original": "@getpaseo/protocol/messages"
+        },
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/agent-state-bucket.js",
+          "kind": "import-statement",
+          "original": "@getpaseo/protocol/agent-state-bucket"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/client/dist/connection/legacy.js": {
+      "bytes": 11042,
+      "imports": [
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/messages.js",
+          "kind": "import-statement",
+          "original": "@getpaseo/protocol/messages"
+        },
+        {
+          "path": "node_modules/@getpaseo/client/dist/connection/legacy-workspaces.js",
+          "kind": "import-statement",
+          "original": "./legacy-workspaces.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/browser-automation/capabilities.js",
+          "kind": "import-statement",
+          "original": "@getpaseo/protocol/browser-automation/capabilities"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/client/dist/connection/index.js": {
+      "bytes": 4568,
+      "imports": [
+        {
+          "path": "node_modules/@getpaseo/client/dist/connection/owned.js",
+          "kind": "import-statement",
+          "original": "./owned.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/client/dist/connection/owned.js",
+          "kind": "import-statement",
+          "original": "./owned.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/client/dist/connection/legacy.js",
+          "kind": "import-statement",
+          "original": "./legacy.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/client-capabilities.js",
+          "kind": "import-statement",
+          "original": "@getpaseo/protocol/client-capabilities"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/client/dist/creation/index.js": {
+      "bytes": 8648,
+      "imports": [],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/protocol/dist/validation/ws-outbound-envelope.js": {
+      "bytes": 1005,
+      "imports": [
+        {
+          "path": "zod",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/messages.js",
+          "kind": "import-statement",
+          "original": "../messages.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/protocol/dist/generated/validation/ws-outbound-schema-metadata.js": {
+      "bytes": 21270,
+      "imports": [
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/validation/ws-outbound-envelope.js",
+          "kind": "import-statement",
+          "original": "../../validation/ws-outbound-envelope.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/protocol/dist/generated/validation/ws-outbound.aot.js": {
+      "bytes": 10482012,
+      "imports": [
+        {
+          "path": "zod",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/generated/validation/ws-outbound-schema-metadata.js",
+          "kind": "import-statement",
+          "original": "./ws-outbound-schema-metadata.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/protocol/dist/validation/ws-outbound.js": {
+      "bytes": 1778,
+      "imports": [
+        {
+          "path": "zod",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/generated/validation/ws-outbound.aot.js",
+          "kind": "import-statement",
+          "original": "../generated/validation/ws-outbound.aot.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/protocol/dist/daemon-endpoints.js": {
+      "bytes": 8759,
+      "imports": [],
+      "format": "esm"
+    },
+    "node_modules/tweetnacl/nacl-fast.js": {
+      "bytes": 61966,
+      "imports": [
+        {
+          "path": "crypto",
+          "kind": "require-call",
+          "external": true
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/base64-js/index.js": {
+      "bytes": 3932,
+      "imports": [],
+      "format": "cjs"
+    },
+    "node_modules/@getpaseo/relay/dist/crypto.js": {
+      "bytes": 5049,
+      "imports": [
+        {
+          "path": "node_modules/tweetnacl/nacl-fast.js",
+          "kind": "import-statement",
+          "original": "tweetnacl"
+        },
+        {
+          "path": "node_modules/base64-js/index.js",
+          "kind": "import-statement",
+          "original": "base64-js"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/relay/dist/base64.js": {
+      "bytes": 627,
+      "imports": [
+        {
+          "path": "node_modules/base64-js/index.js",
+          "kind": "import-statement",
+          "original": "base64-js"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/relay/dist/encrypted-channel.js": {
+      "bytes": 17608,
+      "imports": [
+        {
+          "path": "node_modules/@getpaseo/relay/dist/crypto.js",
+          "kind": "import-statement",
+          "original": "./crypto.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/relay/dist/base64.js",
+          "kind": "import-statement",
+          "original": "./base64.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@noble/hashes/_u64.js": {
+      "bytes": 4794,
+      "imports": [],
+      "format": "esm"
+    },
+    "node_modules/@noble/hashes/utils.js": {
+      "bytes": 26035,
+      "imports": [],
+      "format": "esm"
+    },
+    "node_modules/@noble/hashes/_md.js": {
+      "bytes": 9175,
+      "imports": [
+        {
+          "path": "node_modules/@noble/hashes/_u64.js",
+          "kind": "import-statement",
+          "original": "./_u64.js"
+        },
+        {
+          "path": "node_modules/@noble/hashes/utils.js",
+          "kind": "import-statement",
+          "original": "./utils.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@noble/hashes/sha2.js": {
+      "bytes": 18997,
+      "imports": [
+        {
+          "path": "node_modules/@noble/hashes/_md.js",
+          "kind": "import-statement",
+          "original": "./_md.js"
+        },
+        {
+          "path": "node_modules/@noble/hashes/_u64.js",
+          "kind": "import-statement",
+          "original": "./_u64.js"
+        },
+        {
+          "path": "node_modules/@noble/hashes/utils.js",
+          "kind": "import-statement",
+          "original": "./utils.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@noble/curves/utils.js": {
+      "bytes": 23221,
+      "imports": [
+        {
+          "path": "node_modules/@noble/hashes/utils.js",
+          "kind": "import-statement",
+          "original": "@noble/hashes/utils.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@noble/curves/abstract/modular.js": {
+      "bytes": 39844,
+      "imports": [
+        {
+          "path": "node_modules/@noble/curves/utils.js",
+          "kind": "import-statement",
+          "original": "../utils.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@noble/curves/abstract/curve.js": {
+      "bytes": 35711,
+      "imports": [
+        {
+          "path": "node_modules/@noble/curves/utils.js",
+          "kind": "import-statement",
+          "original": "../utils.js"
+        },
+        {
+          "path": "node_modules/@noble/curves/abstract/modular.js",
+          "kind": "import-statement",
+          "original": "./modular.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@noble/curves/abstract/edwards.js": {
+      "bytes": 32323,
+      "imports": [
+        {
+          "path": "node_modules/@noble/curves/utils.js",
+          "kind": "import-statement",
+          "original": "../utils.js"
+        },
+        {
+          "path": "node_modules/@noble/curves/abstract/curve.js",
+          "kind": "import-statement",
+          "original": "./curve.js"
+        },
+        {
+          "path": "node_modules/@noble/curves/abstract/modular.js",
+          "kind": "import-statement",
+          "original": "./modular.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@noble/curves/abstract/fft.js": {
+      "bytes": 26024,
+      "imports": [
+        {
+          "path": "node_modules/@noble/curves/utils.js",
+          "kind": "import-statement",
+          "original": "../utils.js"
+        },
+        {
+          "path": "node_modules/@noble/curves/abstract/modular.js",
+          "kind": "import-statement",
+          "original": "./modular.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@noble/curves/abstract/hash-to-curve.js": {
+      "bytes": 26273,
+      "imports": [
+        {
+          "path": "node_modules/@noble/curves/utils.js",
+          "kind": "import-statement",
+          "original": "../utils.js"
+        },
+        {
+          "path": "node_modules/@noble/curves/abstract/modular.js",
+          "kind": "import-statement",
+          "original": "./modular.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@noble/curves/abstract/frost.js": {
+      "bytes": 45399,
+      "imports": [
+        {
+          "path": "node_modules/@noble/hashes/utils.js",
+          "kind": "import-statement",
+          "original": "@noble/hashes/utils.js"
+        },
+        {
+          "path": "node_modules/@noble/curves/utils.js",
+          "kind": "import-statement",
+          "original": "../utils.js"
+        },
+        {
+          "path": "node_modules/@noble/curves/abstract/curve.js",
+          "kind": "import-statement",
+          "original": "./curve.js"
+        },
+        {
+          "path": "node_modules/@noble/curves/abstract/fft.js",
+          "kind": "import-statement",
+          "original": "./fft.js"
+        },
+        {
+          "path": "node_modules/@noble/curves/abstract/hash-to-curve.js",
+          "kind": "import-statement",
+          "original": "./hash-to-curve.js"
+        },
+        {
+          "path": "node_modules/@noble/curves/abstract/modular.js",
+          "kind": "import-statement",
+          "original": "./modular.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@noble/curves/abstract/montgomery.js": {
+      "bytes": 14721,
+      "imports": [
+        {
+          "path": "node_modules/@noble/curves/utils.js",
+          "kind": "import-statement",
+          "original": "../utils.js"
+        },
+        {
+          "path": "node_modules/@noble/curves/abstract/curve.js",
+          "kind": "import-statement",
+          "original": "./curve.js"
+        },
+        {
+          "path": "node_modules/@noble/curves/abstract/modular.js",
+          "kind": "import-statement",
+          "original": "./modular.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@noble/curves/abstract/oprf.js": {
+      "bytes": 18336,
+      "imports": [
+        {
+          "path": "node_modules/@noble/curves/utils.js",
+          "kind": "import-statement",
+          "original": "../utils.js"
+        },
+        {
+          "path": "node_modules/@noble/curves/abstract/curve.js",
+          "kind": "import-statement",
+          "original": "./curve.js"
+        },
+        {
+          "path": "node_modules/@noble/curves/abstract/hash-to-curve.js",
+          "kind": "import-statement",
+          "original": "./hash-to-curve.js"
+        },
+        {
+          "path": "node_modules/@noble/curves/abstract/modular.js",
+          "kind": "import-statement",
+          "original": "./modular.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@noble/curves/ed25519.js": {
+      "bytes": 30058,
+      "imports": [
+        {
+          "path": "node_modules/@noble/hashes/sha2.js",
+          "kind": "import-statement",
+          "original": "@noble/hashes/sha2.js"
+        },
+        {
+          "path": "node_modules/@noble/hashes/utils.js",
+          "kind": "import-statement",
+          "original": "@noble/hashes/utils.js"
+        },
+        {
+          "path": "node_modules/@noble/curves/abstract/curve.js",
+          "kind": "import-statement",
+          "original": "./abstract/curve.js"
+        },
+        {
+          "path": "node_modules/@noble/curves/abstract/edwards.js",
+          "kind": "import-statement",
+          "original": "./abstract/edwards.js"
+        },
+        {
+          "path": "node_modules/@noble/curves/abstract/frost.js",
+          "kind": "import-statement",
+          "original": "./abstract/frost.js"
+        },
+        {
+          "path": "node_modules/@noble/curves/abstract/hash-to-curve.js",
+          "kind": "import-statement",
+          "original": "./abstract/hash-to-curve.js"
+        },
+        {
+          "path": "node_modules/@noble/curves/abstract/modular.js",
+          "kind": "import-statement",
+          "original": "./abstract/modular.js"
+        },
+        {
+          "path": "node_modules/@noble/curves/abstract/montgomery.js",
+          "kind": "import-statement",
+          "original": "./abstract/montgomery.js"
+        },
+        {
+          "path": "node_modules/@noble/curves/abstract/oprf.js",
+          "kind": "import-statement",
+          "original": "./abstract/oprf.js"
+        },
+        {
+          "path": "node_modules/@noble/curves/utils.js",
+          "kind": "import-statement",
+          "original": "./utils.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@noble/ciphers/utils.js": {
+      "bytes": 34005,
+      "imports": [],
+      "format": "esm"
+    },
+    "node_modules/@noble/ciphers/_arx.js": {
+      "bytes": 17063,
+      "imports": [
+        {
+          "path": "node_modules/@noble/ciphers/utils.js",
+          "kind": "import-statement",
+          "original": "./utils.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@noble/ciphers/_poly1305.js": {
+      "bytes": 12223,
+      "imports": [
+        {
+          "path": "node_modules/@noble/ciphers/utils.js",
+          "kind": "import-statement",
+          "original": "./utils.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@noble/ciphers/chacha.js": {
+      "bytes": 18422,
+      "imports": [
+        {
+          "path": "node_modules/@noble/ciphers/_arx.js",
+          "kind": "import-statement",
+          "original": "./_arx.js"
+        },
+        {
+          "path": "node_modules/@noble/ciphers/_poly1305.js",
+          "kind": "import-statement",
+          "original": "./_poly1305.js"
+        },
+        {
+          "path": "node_modules/@noble/ciphers/utils.js",
+          "kind": "import-statement",
+          "original": "./utils.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/relay/dist/noise/cipher-state.js": {
+      "bytes": 2120,
+      "imports": [
+        {
+          "path": "node_modules/@noble/ciphers/chacha.js",
+          "kind": "import-statement",
+          "original": "@noble/ciphers/chacha.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@noble/hashes/hmac.js": {
+      "bytes": 3118,
+      "imports": [
+        {
+          "path": "node_modules/@noble/hashes/utils.js",
+          "kind": "import-statement",
+          "original": "./utils.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/relay/dist/noise/symmetric-state.js": {
+      "bytes": 2356,
+      "imports": [
+        {
+          "path": "node_modules/@noble/hashes/sha2.js",
+          "kind": "import-statement",
+          "original": "@noble/hashes/sha2.js"
+        },
+        {
+          "path": "node_modules/@noble/hashes/hmac.js",
+          "kind": "import-statement",
+          "original": "@noble/hashes/hmac.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/relay/dist/noise/cipher-state.js",
+          "kind": "import-statement",
+          "original": "./cipher-state.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/relay/dist/noise/index.js": {
+      "bytes": 6495,
+      "imports": [
+        {
+          "path": "node_modules/@noble/curves/ed25519.js",
+          "kind": "import-statement",
+          "original": "@noble/curves/ed25519.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/relay/dist/noise/cipher-state.js",
+          "kind": "import-statement",
+          "original": "./cipher-state.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/relay/dist/noise/symmetric-state.js",
+          "kind": "import-statement",
+          "original": "./symmetric-state.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/relay/dist/noise/cipher-state.js",
+          "kind": "import-statement",
+          "original": "./cipher-state.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/relay/dist/protected-records.js": {
+      "bytes": 7684,
+      "imports": [
+        {
+          "path": "node_modules/@getpaseo/relay/dist/noise/index.js",
+          "kind": "import-statement",
+          "original": "./noise/index.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/relay/dist/secure-channel.js": {
+      "bytes": 25834,
+      "imports": [
+        {
+          "path": "node_modules/@getpaseo/relay/dist/encrypted-channel.js",
+          "kind": "import-statement",
+          "original": "./encrypted-channel.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/relay/dist/crypto.js",
+          "kind": "import-statement",
+          "original": "./crypto.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/relay/dist/base64.js",
+          "kind": "import-statement",
+          "original": "./base64.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/relay/dist/noise/index.js",
+          "kind": "import-statement",
+          "original": "./noise/index.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/relay/dist/protected-records.js",
+          "kind": "import-statement",
+          "original": "./protected-records.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/relay/dist/index.js": {
+      "bytes": 391,
+      "imports": [
+        {
+          "path": "node_modules/@getpaseo/relay/dist/crypto.js",
+          "kind": "import-statement",
+          "original": "./crypto.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/relay/dist/encrypted-channel.js",
+          "kind": "import-statement",
+          "original": "./encrypted-channel.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/relay/dist/secure-channel.js",
+          "kind": "import-statement",
+          "original": "./secure-channel.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/relay/dist/e2ee.js": {
+      "bytes": 515,
+      "imports": [
+        {
+          "path": "node_modules/@getpaseo/relay/dist/secure-channel.js",
+          "kind": "import-statement",
+          "original": "./secure-channel.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/relay/dist/encrypted-channel.js",
+          "kind": "import-statement",
+          "original": "./encrypted-channel.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/relay/dist/crypto.js",
+          "kind": "import-statement",
+          "original": "./crypto.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/client/dist/daemon-client-relay-e2ee-transport.js": {
+      "bytes": 9722,
+      "imports": [
+        {
+          "path": "node_modules/@getpaseo/relay/dist/index.js",
+          "kind": "import-statement",
+          "original": "@getpaseo/relay"
+        },
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/websocket-message-limit.js",
+          "kind": "import-statement",
+          "original": "@getpaseo/protocol/websocket-message-limit"
+        },
+        {
+          "path": "node_modules/@getpaseo/relay/dist/e2ee.js",
+          "kind": "import-statement",
+          "original": "@getpaseo/relay/e2ee"
+        },
+        {
+          "path": "node_modules/@getpaseo/client/dist/daemon-client-transport-utils.js",
+          "kind": "import-statement",
+          "original": "./daemon-client-transport-utils.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/client/dist/daemon-client-websocket-transport.js": {
+      "bytes": 6049,
+      "imports": [
+        {
+          "path": "node_modules/@getpaseo/client/dist/daemon-client-transport-utils.js",
+          "kind": "import-statement",
+          "original": "./daemon-client-transport-utils.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/client/dist/daemon-client-transport.js": {
+      "bytes": 568,
+      "imports": [
+        {
+          "path": "node_modules/@getpaseo/client/dist/daemon-client-transport-utils.js",
+          "kind": "import-statement",
+          "original": "./daemon-client-transport-utils.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/client/dist/daemon-client-relay-e2ee-transport.js",
+          "kind": "import-statement",
+          "original": "./daemon-client-relay-e2ee-transport.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/client/dist/daemon-client-websocket-transport.js",
+          "kind": "import-statement",
+          "original": "./daemon-client-websocket-transport.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/client/dist/daemon-client-runtime-metrics.js": {
+      "bytes": 7260,
+      "imports": [],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/protocol/dist/provider-snapshot-codec.js": {
+      "bytes": 2565,
+      "imports": [],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/client/dist/compat/normalize-provider-models.js": {
+      "bytes": 2217,
+      "imports": [
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/agent-types.js",
+          "kind": "import-statement",
+          "original": "@getpaseo/protocol/agent-types"
+        },
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/provider-snapshot-codec.js",
+          "kind": "import-statement",
+          "original": "@getpaseo/protocol/provider-snapshot-codec"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/client/dist/terminal-stream-router.js": {
+      "bytes": 3381,
+      "imports": [
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/binary-frames/index.js",
+          "kind": "import-statement",
+          "original": "@getpaseo/protocol/binary-frames/index"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/client/dist/daemon-client.js": {
+      "bytes": 218597,
+      "imports": [
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/chunked-transport.js",
+          "kind": "import-statement",
+          "original": "@getpaseo/protocol/chunked-transport"
+        },
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/binary-frames/index.js",
+          "kind": "import-statement",
+          "original": "@getpaseo/protocol/binary-frames/index"
+        },
+        {
+          "path": "node_modules/@getpaseo/client/dist/daemon-client-transport-utils.js",
+          "kind": "import-statement",
+          "original": "./daemon-client-transport-utils.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/client/dist/legacy-usage-icons.js",
+          "kind": "import-statement",
+          "original": "./legacy-usage-icons.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/client/dist/timeline-subscription/index.js",
+          "kind": "import-statement",
+          "original": "./timeline-subscription/index.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/client/dist/provider-snapshots/index.js",
+          "kind": "import-statement",
+          "original": "./provider-snapshots/index.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/client/dist/connection/index.js",
+          "kind": "import-statement",
+          "original": "./connection/index.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/client/dist/creation/index.js",
+          "kind": "import-statement",
+          "original": "./creation/index.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/client-capabilities.js",
+          "kind": "import-statement",
+          "original": "@getpaseo/protocol/client-capabilities"
+        },
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/websocket-message-limit.js",
+          "kind": "import-statement",
+          "original": "@getpaseo/protocol/websocket-message-limit"
+        },
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/messages.js",
+          "kind": "import-statement",
+          "original": "@getpaseo/protocol/messages"
+        },
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/validation/ws-outbound.js",
+          "kind": "import-statement",
+          "original": "@getpaseo/protocol/validation/ws-outbound"
+        },
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/daemon-endpoints.js",
+          "kind": "import-statement",
+          "original": "@getpaseo/protocol/daemon-endpoints"
+        },
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/binary-frames/index.js",
+          "kind": "import-statement",
+          "original": "@getpaseo/protocol/binary-frames/index"
+        },
+        {
+          "path": "node_modules/@getpaseo/client/dist/daemon-client-transport.js",
+          "kind": "import-statement",
+          "original": "./daemon-client-transport.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/client/dist/daemon-client-runtime-metrics.js",
+          "kind": "import-statement",
+          "original": "./daemon-client-runtime-metrics.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/client/dist/compat/normalize-provider-models.js",
+          "kind": "import-statement",
+          "original": "./compat/normalize-provider-models.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/client/dist/terminal-stream-router.js",
+          "kind": "import-statement",
+          "original": "./terminal-stream-router.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/client/dist/hosts/index.js": {
+      "bytes": 7259,
+      "imports": [
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/binary-frames/index.js",
+          "kind": "import-statement",
+          "original": "@getpaseo/protocol/binary-frames/index"
+        },
+        {
+          "path": "node_modules/@getpaseo/client/dist/daemon-client-transport-utils.js",
+          "kind": "import-statement",
+          "original": "../daemon-client-transport-utils.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/client/dist/daemon-client.js",
+          "kind": "import-statement",
+          "original": "../daemon-client.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/client/dist/terminals/index.js": {
+      "bytes": 3580,
+      "imports": [
+        {
+          "path": "zod",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/client/dist/index.js": {
+      "bytes": 24959,
+      "imports": [
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/agent-labels.js",
+          "kind": "import-statement",
+          "original": "@getpaseo/protocol/agent-labels"
+        },
+        {
+          "path": "node_modules/@getpaseo/client/dist/hosts/index.js",
+          "kind": "import-statement",
+          "original": "./hosts/index.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/client/dist/daemon-client.js",
+          "kind": "import-statement",
+          "original": "./daemon-client.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/client/dist/terminals/index.js",
+          "kind": "import-statement",
+          "original": "./terminals/index.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/client/dist/node/buffering.js": {
+      "bytes": 812,
+      "imports": [],
+      "format": "esm"
+    },
+    "node_modules/ws/lib/constants.js": {
+      "bytes": 503,
+      "imports": [],
+      "format": "cjs"
+    },
+    "node_modules/ws/lib/buffer-util.js": {
+      "bytes": 3501,
+      "imports": [
+        {
+          "path": "http",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "node_modules/ws/lib/constants.js",
+          "kind": "require-call",
+          "original": "./constants"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/ws/lib/limiter.js": {
+      "bytes": 1034,
+      "imports": [],
+      "format": "cjs"
+    },
+    "node_modules/ws/lib/permessage-deflate.js": {
+      "bytes": 14669,
+      "imports": [
+        {
+          "path": "zlib",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "node_modules/ws/lib/buffer-util.js",
+          "kind": "require-call",
+          "original": "./buffer-util"
+        },
+        {
+          "path": "node_modules/ws/lib/limiter.js",
+          "kind": "require-call",
+          "original": "./limiter"
+        },
+        {
+          "path": "node_modules/ws/lib/constants.js",
+          "kind": "require-call",
+          "original": "./constants"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/ws/lib/validation.js": {
+      "bytes": 3903,
+      "imports": [
+        {
+          "path": "buffer",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "node_modules/ws/lib/constants.js",
+          "kind": "require-call",
+          "original": "./constants"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/ws/lib/receiver.js": {
+      "bytes": 17778,
+      "imports": [
+        {
+          "path": "stream",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "node_modules/ws/lib/permessage-deflate.js",
+          "kind": "require-call",
+          "original": "./permessage-deflate"
+        },
+        {
+          "path": "node_modules/ws/lib/constants.js",
+          "kind": "require-call",
+          "original": "./constants"
+        },
+        {
+          "path": "node_modules/ws/lib/buffer-util.js",
+          "kind": "require-call",
+          "original": "./buffer-util"
+        },
+        {
+          "path": "node_modules/ws/lib/validation.js",
+          "kind": "require-call",
+          "original": "./validation"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/ws/lib/sender.js": {
+      "bytes": 16962,
+      "imports": [
+        {
+          "path": "stream",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "crypto",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "util",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "node_modules/ws/lib/permessage-deflate.js",
+          "kind": "require-call",
+          "original": "./permessage-deflate"
+        },
+        {
+          "path": "node_modules/ws/lib/constants.js",
+          "kind": "require-call",
+          "original": "./constants"
+        },
+        {
+          "path": "node_modules/ws/lib/validation.js",
+          "kind": "require-call",
+          "original": "./validation"
+        },
+        {
+          "path": "node_modules/ws/lib/buffer-util.js",
+          "kind": "require-call",
+          "original": "./buffer-util"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/ws/lib/event-target.js": {
+      "bytes": 7321,
+      "imports": [
+        {
+          "path": "node_modules/ws/lib/constants.js",
+          "kind": "require-call",
+          "original": "./constants"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/ws/lib/extension.js": {
+      "bytes": 6183,
+      "imports": [
+        {
+          "path": "node_modules/ws/lib/validation.js",
+          "kind": "require-call",
+          "original": "./validation"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/ws/lib/websocket.js": {
+      "bytes": 38555,
+      "imports": [
+        {
+          "path": "events",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "https",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "http",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "net",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "querystring",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "tls",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "crypto",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "stream",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "url",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "node_modules/ws/lib/permessage-deflate.js",
+          "kind": "require-call",
+          "original": "./permessage-deflate"
+        },
+        {
+          "path": "node_modules/ws/lib/receiver.js",
+          "kind": "require-call",
+          "original": "./receiver"
+        },
+        {
+          "path": "node_modules/ws/lib/sender.js",
+          "kind": "require-call",
+          "original": "./sender"
+        },
+        {
+          "path": "node_modules/ws/lib/validation.js",
+          "kind": "require-call",
+          "original": "./validation"
+        },
+        {
+          "path": "node_modules/ws/lib/constants.js",
+          "kind": "require-call",
+          "original": "./constants"
+        },
+        {
+          "path": "node_modules/ws/lib/event-target.js",
+          "kind": "require-call",
+          "original": "./event-target"
+        },
+        {
+          "path": "node_modules/ws/lib/extension.js",
+          "kind": "require-call",
+          "original": "./extension"
+        },
+        {
+          "path": "node_modules/ws/lib/buffer-util.js",
+          "kind": "require-call",
+          "original": "./buffer-util"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/ws/lib/stream.js": {
+      "bytes": 4204,
+      "imports": [
+        {
+          "path": "node_modules/ws/lib/websocket.js",
+          "kind": "require-call",
+          "original": "./websocket"
+        },
+        {
+          "path": "stream",
+          "kind": "require-call",
+          "external": true
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/ws/lib/subprotocol.js": {
+      "bytes": 1498,
+      "imports": [
+        {
+          "path": "node_modules/ws/lib/validation.js",
+          "kind": "require-call",
+          "original": "./validation"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/ws/lib/websocket-server.js": {
+      "bytes": 17022,
+      "imports": [
+        {
+          "path": "events",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "http",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "stream",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "crypto",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "node_modules/ws/lib/extension.js",
+          "kind": "require-call",
+          "original": "./extension"
+        },
+        {
+          "path": "node_modules/ws/lib/permessage-deflate.js",
+          "kind": "require-call",
+          "original": "./permessage-deflate"
+        },
+        {
+          "path": "node_modules/ws/lib/subprotocol.js",
+          "kind": "require-call",
+          "original": "./subprotocol"
+        },
+        {
+          "path": "node_modules/ws/lib/websocket.js",
+          "kind": "require-call",
+          "original": "./websocket"
+        },
+        {
+          "path": "node_modules/ws/lib/constants.js",
+          "kind": "require-call",
+          "original": "./constants"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/ws/wrapper.mjs": {
+      "bytes": 554,
+      "imports": [
+        {
+          "path": "node_modules/ws/lib/stream.js",
+          "kind": "import-statement",
+          "original": "./lib/stream.js"
+        },
+        {
+          "path": "node_modules/ws/lib/extension.js",
+          "kind": "import-statement",
+          "original": "./lib/extension.js"
+        },
+        {
+          "path": "node_modules/ws/lib/permessage-deflate.js",
+          "kind": "import-statement",
+          "original": "./lib/permessage-deflate.js"
+        },
+        {
+          "path": "node_modules/ws/lib/receiver.js",
+          "kind": "import-statement",
+          "original": "./lib/receiver.js"
+        },
+        {
+          "path": "node_modules/ws/lib/sender.js",
+          "kind": "import-statement",
+          "original": "./lib/sender.js"
+        },
+        {
+          "path": "node_modules/ws/lib/subprotocol.js",
+          "kind": "import-statement",
+          "original": "./lib/subprotocol.js"
+        },
+        {
+          "path": "node_modules/ws/lib/websocket.js",
+          "kind": "import-statement",
+          "original": "./lib/websocket.js"
+        },
+        {
+          "path": "node_modules/ws/lib/websocket-server.js",
+          "kind": "import-statement",
+          "original": "./lib/websocket-server.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/protocol/dist/connection-offer.js": {
+      "bytes": 2208,
+      "imports": [
+        {
+          "path": "zod",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/protocol/dist/ssh-transport.js": {
+      "bytes": 2529,
+      "imports": [],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/protocol/dist/host-target.js": {
+      "bytes": 4901,
+      "imports": [
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/connection-offer.js",
+          "kind": "import-statement",
+          "original": "./connection-offer.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/daemon-endpoints.js",
+          "kind": "import-statement",
+          "original": "./daemon-endpoints.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/ssh-transport.js",
+          "kind": "import-statement",
+          "original": "./ssh-transport.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/client/dist/node/ssh-tunnel.js": {
+      "bytes": 2842,
+      "imports": [
+        {
+          "path": "node:child_process",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "node:net",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/ssh-transport.js",
+          "kind": "import-statement",
+          "original": "@getpaseo/protocol/ssh-transport"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@getpaseo/client/dist/node/index.js": {
+      "bytes": 8435,
+      "imports": [
+        {
+          "path": "node_modules/@getpaseo/client/dist/hosts/index.js",
+          "kind": "import-statement",
+          "original": "../hosts/index.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/client/dist/node/buffering.js",
+          "kind": "import-statement",
+          "original": "./buffering.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/client/dist/node/buffering.js",
+          "kind": "import-statement",
+          "original": "./buffering.js"
+        },
+        {
+          "path": "node:os",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "node_modules/ws/wrapper.mjs",
+          "kind": "import-statement",
+          "original": "ws"
+        },
+        {
+          "path": "node_modules/@getpaseo/protocol/dist/host-target.js",
+          "kind": "import-statement",
+          "original": "@getpaseo/protocol/host-target"
+        },
+        {
+          "path": "node_modules/@getpaseo/client/dist/node/ssh-tunnel.js",
+          "kind": "import-statement",
+          "original": "./ssh-tunnel.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/client/dist/daemon-client-websocket-transport.js",
+          "kind": "import-statement",
+          "original": "../daemon-client-websocket-transport.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/client/dist/daemon-client-relay-e2ee-transport.js",
+          "kind": "import-statement",
+          "original": "../daemon-client-relay-e2ee-transport.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/client/dist/daemon-client.js",
+          "kind": "import-statement",
+          "original": "../daemon-client.js"
+        },
+        {
+          "path": "node_modules/@getpaseo/client/dist/node/ssh-tunnel.js",
+          "kind": "import-statement",
+          "original": "./ssh-tunnel.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "scripts/paseo-sdk-entry.ts": {
+      "bytes": 289,
+      "imports": [
+        {
+          "path": "node_modules/@getpaseo/client/dist/index.js",
+          "kind": "import-statement",
+          "original": "@getpaseo/client"
+        },
+        {
+          "path": "node_modules/@getpaseo/client/dist/node/index.js",
+          "kind": "import-statement",
+          "original": "@getpaseo/client/node"
+        },
+        {
+          "path": "node_modules/@getpaseo/client/dist/daemon-client.js",
+          "kind": "import-statement",
+          "original": "@getpaseo/client/internal/daemon-client"
+        }
+      ],
+      "format": "esm"
+    }
+  },
+  "outputs": {
+    "server/vendor/paseo-sdk.cjs": {
+      "imports": [
+        {
+          "path": "crypto",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "http",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "zlib",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "buffer",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "stream",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "stream",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "crypto",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "util",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "events",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "https",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "http",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "net",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "querystring",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "tls",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "crypto",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "stream",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "url",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "stream",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "events",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "http",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "stream",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "crypto",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "zod",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "zod",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "zod",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "zod",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "zod",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "zod",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "zod",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "zod",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "zod",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "zod",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "zod",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "zod",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "zod",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "zod",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "zod",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "zod",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "zod",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "zod",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "zod",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "zod",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "zod",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "zod",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "zod",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "zod",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "zod",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "node:os",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "zod",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "node:child_process",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "node:net",
+          "kind": "require-call",
+          "external": true
+        }
+      ],
+      "exports": [],
+      "entryPoint": "scripts/paseo-sdk-entry.ts",
+      "inputs": {
+        "node_modules/tweetnacl/nacl-fast.js": {
+          "bytesInOutput": 35766
+        },
+        "node_modules/base64-js/index.js": {
+          "bytesInOutput": 1470
+        },
+        "node_modules/ws/lib/constants.js": {
+          "bytesInOutput": 414
+        },
+        "node_modules/ws/lib/buffer-util.js": {
+          "bytesInOutput": 1004
+        },
+        "node_modules/ws/lib/limiter.js": {
+          "bytesInOutput": 358
+        },
+        "node_modules/ws/lib/permessage-deflate.js": {
+          "bytesInOutput": 5798
+        },
+        "node_modules/ws/lib/validation.js": {
+          "bytesInOutput": 1285
+        },
+        "node_modules/ws/lib/receiver.js": {
+          "bytesInOutput": 7859
+        },
+        "node_modules/ws/lib/sender.js": {
+          "bytesInOutput": 5173
+        },
+        "node_modules/ws/lib/event-target.js": {
+          "bytesInOutput": 2329
+        },
+        "node_modules/ws/lib/extension.js": {
+          "bytesInOutput": 2201
+        },
+        "node_modules/ws/lib/websocket.js": {
+          "bytesInOutput": 13945
+        },
+        "node_modules/ws/lib/stream.js": {
+          "bytesInOutput": 1313
+        },
+        "node_modules/ws/lib/subprotocol.js": {
+          "bytesInOutput": 708
+        },
+        "node_modules/ws/lib/websocket-server.js": {
+          "bytesInOutput": 5678
+        },
+        "scripts/paseo-sdk-entry.ts": {
+          "bytesInOutput": 141
+        },
+        "node_modules/@getpaseo/protocol/dist/agent-labels.js": {
+          "bytesInOutput": 113
+        },
+        "node_modules/@getpaseo/protocol/dist/binary-frames/host-route.js": {
+          "bytesInOutput": 695
+        },
+        "node_modules/@getpaseo/protocol/dist/binary-frames/file-transfer.js": {
+          "bytesInOutput": 1925
+        },
+        "node_modules/@getpaseo/protocol/dist/binary-frames/terminal.js": {
+          "bytesInOutput": 1197
+        },
+        "node_modules/@getpaseo/protocol/dist/agent-message.js": {
+          "bytesInOutput": 265
+        },
+        "node_modules/@getpaseo/protocol/dist/hosts.js": {
+          "bytesInOutput": 3220
+        },
+        "node_modules/@getpaseo/protocol/dist/plugin-registry.js": {
+          "bytesInOutput": 1841
+        },
+        "node_modules/@getpaseo/protocol/dist/agent-profile.js": {
+          "bytesInOutput": 548
+        },
+        "node_modules/@getpaseo/protocol/dist/messages.js": {
+          "bytesInOutput": 131844
+        },
+        "node_modules/@getpaseo/protocol/dist/plugin-config.js": {
+          "bytesInOutput": 277
+        },
+        "node_modules/@getpaseo/protocol/dist/terminal-profile.js": {
+          "bytesInOutput": 184
+        },
+        "node_modules/@getpaseo/protocol/dist/terminal-activity.js": {
+          "bytesInOutput": 226
+        },
+        "node_modules/@getpaseo/protocol/dist/client-capabilities.js": {
+          "bytesInOutput": 972
+        },
+        "node_modules/@getpaseo/protocol/dist/agent-lifecycle.js": {
+          "bytesInOutput": 58
+        },
+        "node_modules/@getpaseo/protocol/dist/provider-manifest.js": {
+          "bytesInOutput": 3828
+        },
+        "node_modules/@getpaseo/protocol/dist/provider-config.js": {
+          "bytesInOutput": 2423
+        },
+        "node_modules/@getpaseo/protocol/dist/agent-types.js": {
+          "bytesInOutput": 264
+        },
+        "node_modules/@getpaseo/protocol/dist/workspace-labels.js": {
+          "bytesInOutput": 87
+        },
+        "node_modules/@getpaseo/protocol/dist/chat/rpc-schemas.js": {
+          "bytesInOutput": 2138
+        },
+        "node_modules/@getpaseo/protocol/dist/chat/types.js": {
+          "bytesInOutput": 470
+        },
+        "node_modules/@getpaseo/protocol/dist/schedule/rpc-schemas.js": {
+          "bytesInOutput": 3464
+        },
+        "node_modules/@getpaseo/protocol/dist/schedule/types.js": {
+          "bytesInOutput": 1780
+        },
+        "node_modules/@getpaseo/protocol/dist/speech/rpc-schemas.js": {
+          "bytesInOutput": 3908
+        },
+        "node_modules/@getpaseo/protocol/dist/loop/rpc-schemas.js": {
+          "bytesInOutput": 4471
+        },
+        "node_modules/@getpaseo/protocol/dist/browser-automation/rpc-schemas.js": {
+          "bytesInOutput": 8047
+        },
+        "node_modules/@getpaseo/protocol/dist/browser-automation/capabilities.js": {
+          "bytesInOutput": 453
+        },
+        "node_modules/@getpaseo/protocol/dist/paseo-config-schema.js": {
+          "bytesInOutput": 1935
+        },
+        "node_modules/@getpaseo/protocol/dist/binary-frames/index.js": {
+          "bytesInOutput": 0
+        },
+        "node_modules/@getpaseo/client/dist/daemon-client-transport-utils.js": {
+          "bytesInOutput": 1979
+        },
+        "node_modules/@getpaseo/protocol/dist/chunked-transport.js": {
+          "bytesInOutput": 3226
+        },
+        "node_modules/@getpaseo/client/dist/legacy-usage-icons.js": {
+          "bytesInOutput": 8851
+        },
+        "node_modules/@getpaseo/client/dist/timeline-subscription/index.js": {
+          "bytesInOutput": 656
+        },
+        "node_modules/@getpaseo/client/dist/provider-snapshots/index.js": {
+          "bytesInOutput": 836
+        },
+        "node_modules/@getpaseo/client/dist/connection/owned.js": {
+          "bytesInOutput": 2455
+        },
+        "node_modules/@getpaseo/client/dist/connection/index.js": {
+          "bytesInOutput": 1788
+        },
+        "node_modules/@getpaseo/protocol/dist/agent-state-bucket.js": {
+          "bytesInOutput": 317
+        },
+        "node_modules/@getpaseo/client/dist/connection/legacy-workspaces.js": {
+          "bytesInOutput": 2750
+        },
+        "node_modules/@getpaseo/client/dist/connection/legacy.js": {
+          "bytesInOutput": 5291
+        },
+        "node_modules/@getpaseo/client/dist/creation/index.js": {
+          "bytesInOutput": 3814
+        },
+        "node_modules/@getpaseo/protocol/dist/validation/ws-outbound.js": {
+          "bytesInOutput": 585
+        },
+        "node_modules/@getpaseo/protocol/dist/generated/validation/ws-outbound.aot.js": {
+          "bytesInOutput": 4417066
+        },
+        "node_modules/@getpaseo/protocol/dist/validation/ws-outbound-envelope.js": {
+          "bytesInOutput": 233
+        },
+        "node_modules/@getpaseo/protocol/dist/generated/validation/ws-outbound-schema-metadata.js": {
+          "bytesInOutput": 4654
+        },
+        "node_modules/@getpaseo/protocol/dist/daemon-endpoints.js": {
+          "bytesInOutput": 3216
+        },
+        "node_modules/@getpaseo/client/dist/daemon-client-transport.js": {
+          "bytesInOutput": 0
+        },
+        "node_modules/@getpaseo/relay/dist/crypto.js": {
+          "bytesInOutput": 2306
+        },
+        "node_modules/@getpaseo/relay/dist/index.js": {
+          "bytesInOutput": 0
+        },
+        "node_modules/@getpaseo/relay/dist/base64.js": {
+          "bytesInOutput": 283
+        },
+        "node_modules/@getpaseo/relay/dist/encrypted-channel.js": {
+          "bytesInOutput": 4153
+        },
+        "node_modules/@noble/hashes/_u64.js": {
+          "bytesInOutput": 121
+        },
+        "node_modules/@noble/hashes/utils.js": {
+          "bytesInOutput": 3420
+        },
+        "node_modules/@noble/hashes/_md.js": {
+          "bytesInOutput": 1485
+        },
+        "node_modules/@noble/hashes/sha2.js": {
+          "bytesInOutput": 1905
+        },
+        "node_modules/@noble/curves/utils.js": {
+          "bytesInOutput": 2437
+        },
+        "node_modules/@noble/curves/abstract/modular.js": {
+          "bytesInOutput": 6498
+        },
+        "node_modules/@noble/curves/abstract/curve.js": {
+          "bytesInOutput": 5727
+        },
+        "node_modules/@noble/curves/abstract/edwards.js": {
+          "bytesInOutput": 4745
+        },
+        "node_modules/@noble/curves/abstract/montgomery.js": {
+          "bytesInOutput": 2261
+        },
+        "node_modules/@noble/curves/ed25519.js": {
+          "bytesInOutput": 1541
+        },
+        "node_modules/@noble/ciphers/utils.js": {
+          "bytesInOutput": 3532
+        },
+        "node_modules/@noble/ciphers/_arx.js": {
+          "bytesInOutput": 1931
+        },
+        "node_modules/@noble/ciphers/_poly1305.js": {
+          "bytesInOutput": 3792
+        },
+        "node_modules/@noble/ciphers/chacha.js": {
+          "bytesInOutput": 1978
+        },
+        "node_modules/@getpaseo/relay/dist/noise/cipher-state.js": {
+          "bytesInOutput": 803
+        },
+        "node_modules/@noble/hashes/hmac.js": {
+          "bytesInOutput": 1318
+        },
+        "node_modules/@getpaseo/relay/dist/noise/symmetric-state.js": {
+          "bytesInOutput": 947
+        },
+        "node_modules/@getpaseo/relay/dist/noise/index.js": {
+          "bytesInOutput": 2563
+        },
+        "node_modules/@getpaseo/relay/dist/protected-records.js": {
+          "bytesInOutput": 2548
+        },
+        "node_modules/@getpaseo/relay/dist/secure-channel.js": {
+          "bytesInOutput": 7763
+        },
+        "node_modules/@getpaseo/relay/dist/e2ee.js": {
+          "bytesInOutput": 0
+        },
+        "node_modules/@getpaseo/client/dist/daemon-client-relay-e2ee-transport.js": {
+          "bytesInOutput": 2701
+        },
+        "node_modules/@getpaseo/client/dist/daemon-client-websocket-transport.js": {
+          "bytesInOutput": 2215
+        },
+        "node_modules/@getpaseo/client/dist/daemon-client-runtime-metrics.js": {
+          "bytesInOutput": 4087
+        },
+        "node_modules/@getpaseo/protocol/dist/provider-snapshot-codec.js": {
+          "bytesInOutput": 445
+        },
+        "node_modules/@getpaseo/client/dist/compat/normalize-provider-models.js": {
+          "bytesInOutput": 660
+        },
+        "node_modules/@getpaseo/client/dist/terminal-stream-router.js": {
+          "bytesInOutput": 1195
+        },
+        "node_modules/@getpaseo/client/dist/daemon-client.js": {
+          "bytesInOutput": 103503
+        },
+        "node_modules/@getpaseo/client/dist/hosts/index.js": {
+          "bytesInOutput": 2599
+        },
+        "node_modules/@getpaseo/client/dist/terminals/index.js": {
+          "bytesInOutput": 1566
+        },
+        "node_modules/@getpaseo/client/dist/index.js": {
+          "bytesInOutput": 9281
+        },
+        "node_modules/@getpaseo/client/dist/node/index.js": {
+          "bytesInOutput": 2563
+        },
+        "node_modules/@getpaseo/client/dist/node/buffering.js": {
+          "bytesInOutput": 335
+        },
+        "node_modules/ws/wrapper.mjs": {
+          "bytesInOutput": 116
+        },
+        "node_modules/@getpaseo/protocol/dist/connection-offer.js": {
+          "bytesInOutput": 780
+        },
+        "node_modules/@getpaseo/protocol/dist/ssh-transport.js": {
+          "bytesInOutput": 1317
+        },
+        "node_modules/@getpaseo/protocol/dist/host-target.js": {
+          "bytesInOutput": 2444
+        },
+        "node_modules/@getpaseo/client/dist/node/ssh-tunnel.js": {
+          "bytesInOutput": 1073
+        }
+      },
+      "bytes": 4922057
+    }
+  }
+}
