@@ -30,7 +30,7 @@ export function createWorklogTools(store: WorklogStore, options: { worker?: Work
           deliveries,
           reportInstructions: "Use worklog_report after meaningful milestones. Include what actually ran, produced results, remaining gaps and the next action. Use the current task revision and a unique requestId; retry an uncertain response with identical arguments. An agent's done request goes to review, not verified completion. On a satellite, queued means durably saved locally and NOT yet applied to the central board. Do not claim delivery until applied. Cached revisions may be stale; never invent a newer revision. Review blocked delivery errors and reread before making a new report." }
         : { task: null, source: satellite ? "central_cache" : "central", cachedAt: cached?.cachedAt ?? null, deliveries,
-          message: satellite ? "중앙에서 받은 연결 작업이 없습니다. 중앙 보드에서 이 세션을 작업에 연결하고 동기화 상태를 확인하세요." : "이 세션에 연결된 작업이 없습니다. Worklog의 세션 인박스에서 작업을 등록하거나 기존 작업에 연결하세요." };
+          message: satellite ? "중앙에서 받은 작업 중 이 세션에 연결된 작업이 없습니다. 중앙 보드에서 이 세션을 작업에 연결한 뒤 연결 상태를 확인하세요." : "이 세션에 연결된 작업이 없습니다. Worklog의 세션 인박스에서 작업을 등록하거나 기존 작업에 연결하세요." };
       return { text: JSON.stringify(result), structuredContent: result };
     },
   });

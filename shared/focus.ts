@@ -27,11 +27,11 @@ export const FOCUS_LABELS: Record<FocusReason, string> = {
 
 export const FOCUS_HINTS: Record<FocusReason, string> = {
   waiting: "에이전트가 권한 승인이나 답변을 기다립니다.",
-  review: "완료 보고가 들어왔습니다. 결과를 확인하고 완료로 옮기세요.",
+  review: "결과 확인을 기다립니다. 확인했으면 완료로 옮기세요.",
   blocked: "결정이나 자료가 필요합니다.",
   error: "세션이 오류 상태입니다.",
   stalled: "진행 중인데 한동안 기록이 없습니다.",
-  noNext: "진행 중인데 다음에 할 일이 적혀 있지 않습니다.",
+  noNext: "진행 중인데 다음 행동이 적혀 있지 않습니다.",
 };
 
 export const DEFAULT_STALL_DAYS = 3;

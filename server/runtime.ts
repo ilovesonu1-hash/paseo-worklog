@@ -8,17 +8,41 @@ import type { PaseoConnection, PaseoTransport } from "./paseo-transport.ts";
 
 type Directory = Awaited<ReturnType<PaseoConnection["paseo"]["hosts"]["list"]>>;
 
+const MISSING_PLUGIN = /unknown.*plugin|plugin.*not.*found|method.*not.*found|not.*registered|no.*handler/i;
+
+function errorText(error: unknown): string {
+  const message = error instanceof Error ? error.message : String(error);
+  // PaseoTransportError keeps its stable code apart from the translated message.
+  const code = error && typeof error === "object" && "code" in error && typeof error.code === "string" ? error.code : "";
+  return code && !message.includes(code) ? `${code} ${message}` : message;
+}
+
 /** Never return a raw connection URL, password, pairing link or credential to UI. */
 export function safeSyncError(error: unknown): string {
-  const message = error instanceof Error ? error.message : String(error);
+  const message = errorText(error);
   const known = message.match(/WORKLOG_[A-Z_]+:\s*([^\n]+)/);
   if (known) return known[1].trim().slice(0, 500);
+  // Before the identity check: "…호스트 ID를 게시하지 않았습니다" is a local readiness error, not a mismatch.
+  if (/LOCAL_|로컬 Paseo|자격 증명/.test(message)) return "이 Paseo 인스턴스의 실행 정보나 로컬 연결 자격 증명을 아직 읽을 수 없습니다.";
   if (/SERVER_ID_MISMATCH|호스트.*ID.*다|identity|identity_mismatch/i.test(message)) return "연결된 호스트의 ID가 등록된 대상과 다릅니다. Paseo 호스트 등록을 확인하세요.";
   if (/permission|forbidden|unauthori|denied|daemon\.manage|권한/i.test(message)) return "Paseo 호스트 연결 권한을 확인하세요. 원격 보고 동기화에는 플러그인 호출 권한이 필요합니다.";
-  if (/LOCAL_|로컬 Paseo|자격 증명/.test(message)) return "이 Paseo 인스턴스의 실행 정보나 로컬 연결 자격 증명을 아직 읽을 수 없습니다.";
-  if (/unknown.*plugin|plugin.*not.*found|method.*not.*found|not.*registered|no.*handler/i.test(message)) return "대상 PC에 Worklog 0.2를 설치하고 수집·보고 모드로 설정하세요.";
+  if (MISSING_PLUGIN.test(message)) return "대상 PC에 Worklog 0.2 이상을 설치하고 수집·보고 호스트로 설정하세요.";
   if (/timeout|timed out|deadline|시간.*초과/i.test(message)) return "호스트 응답 시간이 초과됐습니다. 다음 수집 때 다시 연결합니다.";
   return "호스트와 동기화하지 못했습니다. 연결 상태와 양쪽 Worklog 설정을 확인하세요.";
+}
+
+/**
+ * Classify a failed exchange from stable WORKLOG_* codes, which every Worklog
+ * version sends, never from the translated message (the generic fallback above
+ * also says "설정" and used to mark every unknown failure as "설정 필요").
+ */
+export function bridgeStateForError(error: unknown): HostHealth["bridgeState"] {
+  const message = errorText(error);
+  const code = message.match(/WORKLOG_([A-Z_]+):/)?.[1];
+  if (code === "PAUSED") return "paused";
+  if (code === "ROLE" || code === "CENTRAL_ID" || code === "BOARD_ID" || code === "IDENTITY_MISMATCH") return "unconfigured";
+  if (!code && MISSING_PLUGIN.test(message)) return "unconfigured";
+  return "error";
 }
 
 /**
@@ -227,9 +251,8 @@ export class WorklogRuntime {
         blockedReports = exchange.blocked;
         bridgeState = "ready";
       } catch (cause) {
-        const message = safeSyncError(cause);
-        errors.push(message);
-        bridgeState = /일시 정지/.test(message) ? "paused" : /수집·보고|중앙.*ID|설정|중앙 역할/.test(message) ? "unconfigured" : "error";
+        errors.push(safeSyncError(cause));
+        bridgeState = bridgeStateForError(cause);
       }
     }
     if (active()) this.store.recordHostResult({

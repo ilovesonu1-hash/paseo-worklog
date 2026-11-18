@@ -52,7 +52,7 @@ test("first valid exchange binds immutable central board and worker identities",
   const { worker, central, task, input } = setup(t);
   assert.equal(worker.state().boardId, null);
   const invalidTask = { ...task, sessions: task.sessions.map((session) => ({ ...session, hostId: "foreign" })) };
-  assert.throws(() => worker.exchange(input({ tasks: [invalidTask] }), "worker"), /작업 PC/);
+  assert.throws(() => worker.exchange(input({ tasks: [invalidTask] }), "worker"), /연결되지 않았거나 보관된 작업은/);
   assert.equal(worker.state().boardId, null, "a rejected first exchange must not bind anything");
   const accepted = worker.exchange(input(), "worker");
   assert.equal(accepted.boardId, central.boardId());
@@ -88,7 +88,7 @@ test("enqueue is local-only, exact-payload idempotent, and survives a worker res
   const body = report(task);
   const first = worker.enqueue("worker", "agent", body);
   assert.equal(first.delivery, "queued");
-  assert.match(first.message, /아직 중앙 보드에는 적용되지/);
+  assert.match(first.message, /아직 중앙 보드에는 반영되지/);
   assert.deepEqual(worker.enqueue("worker", "agent", body), first);
   assert.equal(worker.enqueue("worker", "agent", { ...body, nextAction: "changed" }).delivery, "blocked");
   assert.equal(worker.state().queued, 1);

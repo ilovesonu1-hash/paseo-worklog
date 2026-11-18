@@ -22,7 +22,7 @@ export default function contribute(server: PluginServerContext) {
   // Separate from the collection cycle: a GitHub or network failure never sets runtime.error.
   const updater = new PluginUpdater({ local: () => transport.local(), statePath: join(dataDirectory, "update-state.json") });
   const requireCentral = () => {
-    if (worker.readConfig().config.role !== "central") throw new Error("이 호스트는 수집·보고 모드입니다. 작업 편집은 중앙 Worklog에서 진행하세요.");
+    if (worker.readConfig().config.role !== "central") throw new Error("이 호스트는 수집·보고 역할입니다. 작업 편집은 중앙 보드에서 하세요.");
   };
   server.handle(readBoardRpc, () => { requireCentral(); return store.readBoard(); });
   server.handle(mutateRpc, (input) => {
@@ -32,7 +32,7 @@ export default function contribute(server: PluginServerContext) {
     return result;
   });
   server.handle(observeSessionsRpc, () => {
-    throw new Error("Worklog 0.2는 서버가 세션을 수집합니다. 최신 Worklog 화면을 다시 열어 주세요.");
+    throw new Error("Worklog 0.2부터는 서버가 세션을 수집합니다. 최신 Worklog 화면을 다시 열어 주세요.");
   });
   server.handle(activitiesRpc, (input) => { requireCentral(); return store.listActivities(input); });
   server.handle(readRosterRpc, () => { requireCentral(); return store.readRoster(worker.readConfig().config.pollIntervalSeconds * 3000); });

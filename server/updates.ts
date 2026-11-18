@@ -110,7 +110,7 @@ export class PluginUpdater {
     if (this.now().getTime() - Date.parse(pending.requestedAt) < PENDING_TIMEOUT_MS) return;
     this.write({ ...this.state, pending: null, last: {
       at: this.now().toISOString(), outcome: "unknown", fromRevision: pending.fromRevision, targetRevision: pending.targetRevision,
-      message: "업데이트 결과를 확인하지 못했습니다. 업데이트 확인을 다시 눌러 현재 커밋을 확인하세요.",
+      message: "업데이트 결과를 확인하지 못했습니다. \"업데이트 확인\"을 다시 눌러 지금 설치된 커밋을 보세요.",
     } });
   }
 
@@ -149,7 +149,7 @@ export class PluginUpdater {
   }
 
   private toCheck(entry: PreviewEntry | undefined, checkedAt: string): UpdateCheck {
-    if (!entry) return { checkedAt, outcome: "error", currentRevision: null, targetRevision: null, compareUrl: null, error: "Paseo가 Worklog 설치를 찾지 못했습니다." };
+    if (!entry) return { checkedAt, outcome: "error", currentRevision: null, targetRevision: null, compareUrl: null, error: "Paseo가 설치된 Worklog를 찾지 못했습니다." };
     const target = entry.target?.kind === "git" ? entry.target.commit ?? null : entry.target?.version ?? null;
     return {
       checkedAt, outcome: entry.outcome, currentRevision: entry.current?.currentRevision ?? null, targetRevision: target,
@@ -178,7 +178,7 @@ export class PluginUpdater {
 
   async apply(targetRevision: string): Promise<ApplyUpdateResult> {
     this.expirePending();
-    if (this.applying || this.state.pending) return { ok: false, code: "busy", message: "이미 업데이트를 진행 중입니다. 결과가 표시될 때까지 기다리세요.", status: this.status() };
+    if (this.applying || this.state.pending) return { ok: false, code: "busy", message: "이미 업데이트가 진행 중입니다. 결과가 표시될 때까지 기다리세요.", status: this.status() };
     this.applying = true;
     try {
       let entry: PreviewEntry | undefined;

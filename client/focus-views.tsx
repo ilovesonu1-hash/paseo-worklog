@@ -115,7 +115,7 @@ export function FocusQueueView(props: FocusViewProps) {
     })}
     {!queue.length ? <Empty colors={colors} title="지금 확인할 일이 없습니다"
       subtitle={doing ? `진행 중인 작업 ${doing}개는 모두 다음 행동이 적혀 있고 막힌 곳이 없습니다.` : "권한이나 답변을 기다리는 세션도 없습니다. 프로젝트별 현황은 \"프로젝트 흐름\"에서 볼 수 있습니다."} /> : null}
-    <Body colors={colors} muted style={{ fontSize: 11 }}>세션 상태는 수집이 정상인 호스트의 현재 관측만 반영합니다. 오래된 관측으로는 알림을 만들지 않습니다.</Body>
+    <Body colors={colors} muted style={{ fontSize: 11 }}>세션 상태는 수집이 정상인 호스트의 현재 관측만 반영합니다. 오래된 관측은 이 목록에 넣지 않습니다.</Body>
   </ScrollView>;
 }
 
@@ -205,7 +205,7 @@ export function ProjectFlowView(props: FocusViewProps & { viewportWidth: number 
   if (!lanes.length) return <Empty colors={colors} title="아직 프로젝트가 없습니다" subtitle="세션이 수집되거나 작업에 프로젝트 이름을 적으면 프로젝트별 흐름이 여기에 나타납니다." />;
   const header = <View style={{ gap: 4, paddingBottom: 6 }}>
     <Text style={{ color: colors.foreground, fontSize: 17, fontWeight: "700" }}>프로젝트 흐름</Text>
-    <Body colors={colors} muted style={{ fontSize: 12 }}>프로젝트마다 지금 하는 일과 단계별 작업을 한 줄로 봅니다. 작업에 연결하지 않은 세션은 폴더 이름으로 자동 배치됩니다(점선 카드). 실행 중은 진행 중, 응답 완료는 검토, 권한·답변 필요와 오류는 막힘 열에 놓입니다. {DEFAULT_RECENT_DAYS}일 넘게 활동이 없는 응답 완료 세션은 카드 대신 "조용한 세션" 개수로만 표시합니다.</Body>
+    <Body colors={colors} muted style={{ fontSize: 12 }}>프로젝트마다 지금 하는 일과 단계별 작업을 한 줄로 봅니다. 작업에 연결하지 않은 세션은 폴더 이름으로 자동 배치됩니다(점선 카드). "실행 중"은 "진행 중", "응답 완료"는 "검토", "권한·답변 필요"와 "오류"는 "막힘" 열에 놓입니다. {DEFAULT_RECENT_DAYS}일 넘게 활동이 없는 응답 완료 세션은 카드 대신 "조용한 세션" 개수로만 표시합니다.</Body>
   </View>;
 
   if (compact) return <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 16, gap: 12 }}>

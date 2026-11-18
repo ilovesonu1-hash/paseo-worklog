@@ -112,7 +112,7 @@ export function HostHealthList({ hosts, colors, showIds = false }: { hosts: Host
     online: "수집 정상", offline: "연결 끊김", error: "수집 오류", disabled: "수집 꺼짐", connecting: "연결 중", stale: "갱신 지연",
   };
   const bridgeLabels: Record<HostHealth["bridgeState"], string> = {
-    local: "이 호스트", ready: "보고 연결됨", unconfigured: "보고 설정 필요", unavailable: "보고 플러그인 확인", error: "보고 연결 오류", paused: "보고 일시 정지",
+    local: "이 호스트", ready: "보고 연결됨", unconfigured: "보고 설정 필요", unavailable: "보고 연결 불가", error: "보고 연결 오류", paused: "보고 일시 정지",
   };
   return <View style={{ gap: 8 }}>{hosts.map((host) => {
     const tone = host.status === "online" ? colors.statusSuccess : host.status === "error" ? colors.statusDanger : colors.foregroundMuted;
@@ -122,7 +122,7 @@ export function HostHealthList({ hosts, colors, showIds = false }: { hosts: Host
         <Text style={{ color: tone, fontSize: 11 }}>{labels[host.status]}</Text>
       </View>
       <Body colors={colors} muted style={{ fontSize: 10 }}>마지막 성공 {host.lastSuccessAt ? `${shortAge(host.lastSuccessAt)} · ${dateLabel(host.lastSuccessAt)}` : "아직 없음"}</Body>
-      <Body colors={colors} muted style={{ fontSize: 10 }}>세션 {host.sessionCount}개 · {bridgeLabels[host.bridgeState]}{host.queuedReports ? ` · 보고 대기 ${host.queuedReports}` : ""}{host.blockedReports ? ` · 보류 ${host.blockedReports}` : ""}{host.truncated ? " · 목록 일부만 표시" : ""}</Body>
+      <Body colors={colors} muted style={{ fontSize: 10 }}>세션 {host.sessionCount}개 · {bridgeLabels[host.bridgeState]}{host.queuedReports ? ` · 전송 대기 ${host.queuedReports}` : ""}{host.blockedReports ? ` · 보류 ${host.blockedReports}` : ""}{host.truncated ? " · 목록 일부만 표시" : ""}</Body>
       {host.error ? <Body colors={colors} style={{ fontSize: 11, color: colors.statusDanger }}>{host.error}</Body> : null}
       {showIds ? <Body colors={colors} muted selectable style={{ fontSize: 10 }}>{host.hostId}</Body> : null}
     </View>;

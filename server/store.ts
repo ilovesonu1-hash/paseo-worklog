@@ -10,6 +10,7 @@ import {
   sessionSchema,
   taskFieldsSchema,
   STATUS_LABELS,
+  PRIORITY_LABELS,
   type Activity,
   type AgentReport,
   type BoardSnapshot,
@@ -27,10 +28,10 @@ const TASK_LIMIT = 2_000;
 const FIELD_NAMES = Object.keys(taskFieldsSchema.shape) as (keyof TaskFields)[];
 const FIELD_LABELS: Record<keyof TaskFields, string> = {
   title: "제목", project: "프로젝트", description: "설명", status: "상태", priority: "우선순위",
-  summary: "현재 상황", doneText: "한 일", nextAction: "다음 할 일", blockedReason: "막힌 이유", evidence: "근거",
+  summary: "현재 요약", doneText: "한 일", nextAction: "다음 행동", blockedReason: "막힌 이유", evidence: "결과 근거",
 };
 const EXECUTION_LABELS: Record<SessionSnapshot["execution"], string> = {
-  working: "실행 중", waiting: "권한·답변 필요", error: "오류", idle: "응답 완료·지시 대기", closed: "종료", unknown: "알 수 없음",
+  working: "실행 중", waiting: "권한·답변 필요", error: "실행 오류", idle: "응답 완료 · 지시 대기", closed: "종료", unknown: "상태 미확인",
 };
 
 type TaskRow = {
@@ -62,7 +63,7 @@ function canonical(value: unknown): string {
 function normalizedSession(value: SessionSnapshot): SessionSnapshot {
   const session = sessionSchema.parse(value);
   const timestamp = Date.parse(session.observedAt);
-  if (!Number.isFinite(timestamp)) throw new Error("세션 관찰 시각이 올바르지 않습니다.");
+  if (!Number.isFinite(timestamp)) throw new Error("세션 관측 시각이 올바르지 않습니다.");
   return { ...session, observedAt: new Date(timestamp).toISOString() };
 }
 
@@ -397,7 +398,7 @@ export class WorklogStore {
   }
 
   observe(sessions: SessionSnapshot[]): { changed: number } {
-    if (sessions.length > 2_000) throw new Error("한 번에 관찰할 수 있는 세션은 2,000개입니다.");
+    if (sessions.length > 2_000) throw new Error("한 번에 관측할 수 있는 세션은 2,000개입니다.");
     // Validate the entire batch before writing any row.
     const normalized = sessions.map(normalizedSession);
     return this.transaction(() => ({ changed: normalized.reduce((count, session) => count + Number(this.upsertSession(session)), 0) }));
@@ -435,7 +436,7 @@ export class WorklogStore {
       const id = randomUUID();
       this.db.prepare("INSERT INTO tasks (id, revision, fields_json, created_at, updated_at, archived_at) VALUES (?, 1, ?, ?, ?, NULL)")
         .run(id, JSON.stringify(mutation.fields), at, at);
-      this.record(id, "created", `작업 생성: ${mutation.fields.title}`, "user", at);
+      this.record(id, "created", `작업 등록: ${mutation.fields.title}`, "user", at);
       if (mutation.session) {
         this.upsertSession(mutation.session);
         this.db.prepare("INSERT INTO task_sessions (session_key, task_id, linked_at) VALUES (?, ?, ?)").run(sessionKey(mutation.session), id, at);
@@ -522,11 +523,11 @@ export class WorklogStore {
         `에이전트 보고: ${hostId} · ${agentId}`,
         ...(report.status === "done" ? ["완료 요청을 검토 상태로 기록했습니다."] : []),
         `상태: ${STATUS_LABELS[status]}`,
-        `현재 상황: ${report.summary || "(없음)"}`,
+        `현재 요약: ${report.summary || "(없음)"}`,
         `한 일: ${report.doneText || "(없음)"}`,
-        `다음 할 일: ${report.nextAction || "(없음)"}`,
+        `다음 행동: ${report.nextAction || "(없음)"}`,
         `막힌 이유: ${next.blockedReason || "(없음)"}`,
-        `근거: ${next.evidence || "(없음)"}`,
+        `결과 근거: ${next.evidence || "(없음)"}`,
       ];
       this.record(task.id, "reported", sections.join("\n\n"), "agent", at);
       return { ok: true, task, replayed: false };
@@ -601,14 +602,14 @@ export class WorklogStore {
     const lines = ["# Paseo Worklog", "", `내보낸 시각: ${new Date().toISOString()}`, "", `작업 ${tasks.length}개 · 활동 ${activities.length}개`, ""];
     for (const task of tasks) {
       lines.push(`## ${oneLine(task.title)}`, "", `- ID: ${task.id}`, `- 상태: ${STATUS_LABELS[task.status]}${task.archivedAt ? " · 보관됨" : ""}`,
-        `- 프로젝트: ${oneLine(task.project) || "(없음)"}`, `- 우선순위: ${task.priority}`, `- 버전: ${task.revision}`,
+        `- 프로젝트: ${oneLine(task.project) || "(없음)"}`, `- 우선순위: ${PRIORITY_LABELS[task.priority]}`, `- 수정 버전: ${task.revision}`,
         `- 생성: ${task.createdAt}`, `- 수정: ${task.updatedAt}`, "");
-      for (const [label, value] of [["설명", task.description], ["현재 상황", task.summary], ["한 일", task.doneText], ["다음 할 일", task.nextAction], ["막힌 이유", task.blockedReason], ["근거", task.evidence]]) {
+      for (const [label, value] of [["설명", task.description], ["현재 요약", task.summary], ["한 일", task.doneText], ["다음 행동", task.nextAction], ["막힌 이유", task.blockedReason], ["결과 근거", task.evidence]]) {
         if (value) lines.push(`### ${label}`, "", value!, "");
       }
       if (task.sessions.length) {
         lines.push("### 연결된 세션", "");
-        for (const session of task.sessions) lines.push(`- ${oneLine(session.hostLabel || session.hostId)} · ${oneLine(session.title)} · ${EXECUTION_LABELS[session.execution]} (${session.agentId}) · 마지막 관찰 ${session.observedAt}`);
+        for (const session of task.sessions) lines.push(`- ${oneLine(session.hostLabel || session.hostId)} · ${oneLine(session.title)} · ${EXECUTION_LABELS[session.execution]} (${session.agentId}) · 마지막 관측 ${session.observedAt}`);
         lines.push("");
       }
       const history = activities.filter((activity) => activity.taskId === task.id);

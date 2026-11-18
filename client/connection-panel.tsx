@@ -70,7 +70,7 @@ export function ConnectionPanel({ runtime, hostId, colors, compact, onClose }: {
       if (result.ok) committed(result.snapshot);
       else { setError(result.message); setConflict(result.snapshot); void queryClient.invalidateQueries({ queryKey: runtimeKey }); }
     } catch (cause) {
-      setUnknown(true); setError(`저장 응답을 확인하지 못했습니다. 초안을 유지했습니다. 저장 결과를 먼저 확인하세요. ${errorMessage(cause)}`);
+      setUnknown(true); setError(`저장 응답을 받지 못했습니다. 초안은 유지됩니다. "저장 결과 확인"으로 결과를 먼저 확인하세요. ${errorMessage(cause)}`);
     } finally { inFlight.current = false; setSaving(false); }
   }
   async function checkSaved() {
@@ -94,7 +94,7 @@ export function ConnectionPanel({ runtime, hostId, colors, compact, onClose }: {
     try {
       if (runtime.snapshot.config.role === "central") {
         const result = await requestCycle({});
-        setNotice(result.scheduled ? "백그라운드 수집을 요청했습니다." : "수집을 시작하지 않았습니다. 실행 상태와 설정을 확인하세요.");
+        setNotice(result.scheduled ? "백그라운드 수집을 요청했습니다." : "수집이 시작되지 않았습니다. 실행 상태와 설정을 확인하세요.");
       }
       const current = await readRuntime({});
       queryClient.setQueryData(runtimeKey, current);
@@ -107,7 +107,7 @@ export function ConnectionPanel({ runtime, hostId, colors, compact, onClose }: {
     footer={<>
       {closeIntent ? <Banner colors={colors} action={<View style={{ flexDirection: "row", gap: 8 }}>
         <Button label="계속 편집" small colors={colors} onPress={() => setCloseIntent(false)} />
-        <Button label="변경 버리고 닫기" small colors={colors} variant="ghost" onPress={onClose} />
+        <Button label="저장하지 않고 닫기" small colors={colors} variant="ghost" onPress={onClose} />
       </View>}>저장하지 않은 설정이 있습니다.{unknown ? " 저장 응답은 아직 확인하지 못했습니다." : ""}</Banner> : null}
       <View style={{ flexDirection: "row", justifyContent: "space-between", gap: 8 }}>
         <Button label={checking ? "확인 중…" : runtime.snapshot.config.role === "central" ? "지금 수집 요청" : "상태 새로고침"} colors={colors} small onPress={() => { void refresh(); }} disabled={checking || saving || unknown} />
@@ -118,20 +118,20 @@ export function ConnectionPanel({ runtime, hostId, colors, compact, onClose }: {
     {error ? <Banner colors={colors} danger>{error}</Banner> : null}
     {notice ? <Body colors={colors} style={{ color: colors.statusSuccess, fontSize: 12 }}>{notice}</Body> : null}
     {currentSnapshot.revision !== baseline.revision && !unknown ? <Banner colors={colors}
-      action={<Button label="현재 설정으로 다시 열기 · 초안 교체" colors={colors} small onPress={() => reload(currentSnapshot)} />}>
+      action={<Button label="저장된 설정으로 교체" colors={colors} small onPress={() => reload(currentSnapshot)} />}>
       서버에 다른 설정이 저장되어 있습니다. 현재 역할: {currentSnapshot.config.role === "central" ? "중앙 보드" : "수집·보고 호스트"}, 설정 r{currentSnapshot.revision}. 작성 중인 초안은 유지했습니다.
     </Banner> : null}
     <View style={{ gap: 5 }}>
       <Text style={{ color: colors.foreground, fontSize: 13, fontWeight: "700" }}>이 호스트의 서버 ID</Text>
       <Body colors={colors} selectable style={{ fontSize: 11 }}>{runtime.self?.serverId || "아직 확인하지 못했습니다."}</Body>
-      <Body colors={colors} muted style={{ fontSize: 11 }}>중앙 PC에서 표시된 ID를 다른 PC의 중앙 서버 ID에 입력하세요.</Body>
+      <Body colors={colors} muted style={{ fontSize: 11 }}>이 PC가 중앙 보드라면, 이 ID를 다른 PC의 "중앙 서버 ID" 칸에 입력하세요.</Body>
     </View>
     <View style={{ gap: 8 }}><Text style={{ color: colors.foreground, fontSize: 13, fontWeight: "700" }}>이 호스트의 역할</Text>
       <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 7 }}>
         <Chip label="중앙 보드" colors={colors} selected={draft.role === "central"} onPress={saving || unknown ? undefined : () => setDraft({ ...draft, role: "central" })} />
         <Chip label="수집·보고 호스트" colors={colors} selected={draft.role === "satellite"} onPress={saving || unknown ? undefined : () => setDraft({ ...draft, role: "satellite" })} />
       </View>
-      <Body colors={colors} muted style={{ fontSize: 12 }}>{draft.role === "central" ? "작업 보드를 편집하고 선택한 PC들의 세션과 보고를 백그라운드에서 모읍니다." : "에이전트 보고를 이 호스트에 보관하고, 연결된 중앙 서버가 가져가도록 합니다. 작업 편집은 중앙 Worklog에서 합니다."}</Body>
+      <Body colors={colors} muted style={{ fontSize: 12 }}>{draft.role === "central" ? "작업 보드를 편집하고 선택한 PC들의 세션과 보고를 백그라운드에서 모읍니다." : "에이전트 보고를 이 호스트에 보관하면 연결된 중앙 PC가 가져갑니다. 작업 편집은 중앙 보드에서 합니다."}</Body>
     </View>
     {draft.role !== baseline.config.role && runtime.localTaskCount > 0 ? <Banner colors={colors}>이 호스트에 작업 {runtime.localTaskCount}개가 있습니다. 역할을 바꿔도 기록은 이곳에 보존되며 다른 PC로 이동하지 않습니다. 중앙 보드 역할에서 다시 편집할 수 있습니다.</Banner> : null}
     <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
@@ -162,10 +162,10 @@ export function ConnectionPanel({ runtime, hostId, colors, compact, onClose }: {
         <Button label="수집 선택 해제" colors={colors} small disabled={saving || unknown} onPress={() => setDraft({ ...draft, remoteHostIds: draft.remoteHostIds.filter((value) => value !== id) })} />
       </View>)}
     </View>}
-    {draft.role === "central" ? <Field label="수집 주기 · 초" value={interval} onChange={setIntervalValue} colors={colors} placeholder="15" disabled={saving || unknown} maxLength={3} /> : null}
+    {draft.role === "central" ? <Field label="수집 주기(초)" value={interval} onChange={setIntervalValue} colors={colors} placeholder="15" disabled={saving || unknown} maxLength={3} /> : null}
     <View style={{ height: 1, backgroundColor: colors.border }} />
     <View style={{ gap: 6 }}><Text style={{ color: colors.foreground, fontSize: 13, fontWeight: "700" }}>현재 실행 상태</Text>
-      <Body colors={colors} muted style={{ fontSize: 11 }}>{runtime.running ? "백그라운드 연결 실행 중" : "백그라운드 연결 정지"}{runtime.inFlight ? " · 처리 중" : ""}{runtime.lastCycleAt ? `\n마지막 주기 ${dateLabel(runtime.lastCycleAt)}` : ""}</Body>
+      <Body colors={colors} muted style={{ fontSize: 11 }}>{runtime.running ? "백그라운드 연결 실행 중" : "백그라운드 연결 정지"}{runtime.inFlight ? " · 처리 중" : ""}{runtime.lastCycleAt ? `\n마지막 실행 ${dateLabel(runtime.lastCycleAt)}` : ""}</Body>
       {runtime.error ? <Banner colors={colors} danger>{runtime.error}</Banner> : null}
     </View>
     <HostHealthList hosts={runtime.roster.hosts} colors={colors} showIds />
@@ -205,13 +205,13 @@ export function SatelliteScreen({ props, runtime, runtimeError, onOpenConnection
         <View style={{ gap: 4 }}><Text style={{ color: colors.foreground, fontSize: 23, fontWeight: "700" }}>Worklog</Text><Body colors={colors} muted>수집·보고 호스트 · {runtime.self?.label || props.host.label}</Body></View>
         <Button label="연결 상태" colors={colors} onPress={onOpenConnection} />
       </View>
-      <Body colors={colors} muted style={{ fontSize: 12 }}>이 PC의 에이전트 보고를 보관합니다. 중앙 서버가 보고를 가져가 작업 기록에 반영합니다.</Body>
+      <Body colors={colors} muted style={{ fontSize: 12 }}>이 PC의 에이전트 보고를 보관합니다. 중앙 PC가 보고를 가져가 작업 기록에 반영합니다.</Body>
     </View>
     <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: props.layout.compact ? 16 : 24, gap: 18, maxWidth: 960, width: "100%" }}>
       {runtimeError || runtime.error ? <Banner colors={colors} danger>{runtimeError || runtime.error}</Banner> : null}
       {error ? <Banner colors={colors} danger>{error}</Banner> : null}
       <Banner colors={colors} action={<Button label="상태 새로고침" small colors={colors} onPress={onRefresh} />}>
-        작업 등록과 편집은 중앙 호스트의 Worklog에서 진행하세요.{"\n"}최근 중앙 연결: {runtime.worker.lastSyncAt ? `${shortAge(runtime.worker.lastSyncAt)} · ${dateLabel(runtime.worker.lastSyncAt)}` : "아직 연결되지 않음"}{!runtime.snapshot.config.enabled ? "\n백그라운드 연결이 꺼져 있습니다." : ""}
+        작업 등록과 편집은 중앙 보드에서 하세요.{"\n"}최근 중앙 연결: {runtime.worker.lastSyncAt ? `${shortAge(runtime.worker.lastSyncAt)} · ${dateLabel(runtime.worker.lastSyncAt)}` : "아직 연결되지 않음"}{!runtime.snapshot.config.enabled ? "\n백그라운드 연결이 꺼져 있습니다." : ""}
       </Banner>
       <View style={{ gap: 5 }}><Body colors={colors} muted style={{ fontSize: 11 }}>중앙 서버 ID</Body><Body colors={colors} selectable style={{ fontSize: 11 }}>{centralId || "설정 필요"}</Body></View>
       <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 9 }}>
@@ -231,7 +231,7 @@ export function SatelliteScreen({ props, runtime, runtimeError, onOpenConnection
         {delivery.report.nextAction ? <Body colors={colors} lines={3} style={{ fontSize: 12 }}>다음 행동: {delivery.report.nextAction}</Body> : null}
         {delivery.result && !delivery.result.ok ? <Banner colors={colors} danger>{delivery.result.message}</Banner> : null}
         {delivery.state === "blocked" && !delivery.dismissedAt ? <>
-          <Body colors={colors} muted style={{ fontSize: 11 }}>중앙 작업에 반영되지 않았습니다. 내용을 확인한 뒤 필요하면 최신 작업을 기준으로 새 보고를 작성하세요.</Body>
+          <Body colors={colors} muted style={{ fontSize: 11 }}>중앙 작업에 반영되지 않았습니다. 내용을 확인한 뒤 필요하면 에이전트에게 최신 작업을 기준으로 새 보고를 요청하세요.</Body>
           <Button label={busyDelivery === delivery.deliveryId ? "확인 중…" : "보류 내용 확인함"} colors={colors} small disabled={!!busyDelivery || !!runtimeError} onPress={() => { void acknowledge(delivery.deliveryId); }} />
         </> : null}
         {delivery.dismissedAt ? <Body colors={colors} muted style={{ fontSize: 10 }}>보류 확인 {dateLabel(delivery.dismissedAt)} · 재전송되거나 반영 처리된 것은 아닙니다.</Body> : null}

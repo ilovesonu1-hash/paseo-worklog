@@ -4,6 +4,7 @@ export const statusSchema = z.enum(["todo", "doing", "review", "blocked", "done"
 export type TaskStatus = z.infer<typeof statusSchema>;
 export const STATUS_LABELS: Record<TaskStatus, string> = { todo: "할 일", doing: "진행 중", review: "검토", blocked: "막힘", done: "완료" };
 export const STATUS_ORDER: TaskStatus[] = ["todo", "doing", "review", "blocked", "done"];
+export const PRIORITY_LABELS: Record<"high" | "normal" | "low", string> = { high: "높음", normal: "보통", low: "낮음" };
 export const executionSchema = z.enum(["working", "waiting", "error", "idle", "closed", "unknown"]);
 export const sessionSchema = z.object({
   hostId: z.string().min(1).max(256), hostLabel: z.string().max(256),

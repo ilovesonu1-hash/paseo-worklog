@@ -181,7 +181,7 @@ function HostWorklogBoard(props: PluginScreenProps & { runtime: RuntimeStatus; r
     } catch (error) {
       pending.current = request;
       setUncertain(true);
-      setActionError(`서버 응답을 확인하지 못했습니다. 입력한 내용은 유지됩니다. 같은 요청으로 결과를 다시 확인하세요. ${errorMessage(error)}`);
+      setActionError(`서버 응답을 받지 못했습니다. 입력한 내용은 유지됩니다. "결과 다시 확인"을 누르면 같은 변경을 두 번 반영하지 않고 결과만 다시 확인합니다. ${errorMessage(error)}`);
     } finally {
       busyRef.current = false; setBusy(false);
     }
@@ -253,7 +253,7 @@ function HostWorklogBoard(props: PluginScreenProps & { runtime: RuntimeStatus; r
   }
 
   const actionBanner = actionError ? <Banner danger colors={colors}
-    action={uncertain ? <Button label={busy ? "결과 확인 중…" : "같은 요청으로 결과 확인"} onPress={retryPending} colors={colors} disabled={busy} small /> : undefined}>{actionError}</Banner> : null;
+    action={uncertain ? <Button label={busy ? "결과 확인 중…" : "결과 다시 확인"} onPress={retryPending} colors={colors} disabled={busy} small /> : undefined}>{actionError}</Banner> : null;
 
   return <View style={{ flex: 1, minHeight: 0, backgroundColor: colors.surface0 }} onLayout={(event) => setViewportWidth(event.nativeEvent.layout.width)}>
     <View style={{ paddingHorizontal: compact ? 16 : 24, paddingTop: 21, paddingBottom: 16, gap: 17, borderBottomWidth: 1, borderColor: colors.border }}>
@@ -285,12 +285,12 @@ function HostWorklogBoard(props: PluginScreenProps & { runtime: RuntimeStatus; r
             {count !== null ? <Text style={{ color: section === key ? colors.accent : colors.foregroundMuted, fontSize: 10, fontWeight: "600" }}>{count}</Text> : null}
           </Pressable>)}
         </ScrollView>
-        {!compact ? <Text style={{ color: colors.foregroundMuted, fontSize: 10 }}>중앙 기록 · {props.runtime.self?.label || props.host.label}</Text> : null}
+        {!compact ? <Text style={{ color: colors.foregroundMuted, fontSize: 10 }}>중앙 보드 · {props.runtime.self?.label || props.host.label}</Text> : null}
       </View>
     </View>
 
     {actionError && !editor && !linkingSession ? <View style={{ paddingHorizontal: compact ? 16 : 24, paddingTop: 12 }}>{actionBanner}</View> : null}
-    {props.runtimeError ? <View style={{ padding: 16 }}><Banner colors={colors} danger action={<Button label="연결 상태 확인" colors={colors} small onPress={props.onOpenConnection} />}>호스트 역할과 연결 상태를 확인하지 못해 쓰기를 잠시 멈췄습니다. {props.runtimeError}</Banner></View> : null}
+    {props.runtimeError ? <View style={{ padding: 16 }}><Banner colors={colors} danger action={<Button label="연결 상태 확인" colors={colors} small onPress={props.onOpenConnection} />}>호스트 역할과 연결 상태를 확인하지 못해 작업 추가와 변경을 잠시 멈췄습니다. {props.runtimeError}</Banner></View> : null}
     {notice && !actionError && !editor ? <View style={{ paddingHorizontal: compact ? 16 : 24, paddingTop: 8, flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
       <Text style={{ color: colors.statusSuccess, fontSize: 11 }}>{notice}</Text><Button label="닫기" colors={colors} small variant="ghost" onPress={() => setNotice(null)} /></View> : null}
     {board.isError ? <View style={{ padding: 16 }}><Banner danger colors={colors} action={<Button small label="다시 불러오기" colors={colors} onPress={() => { void board.refetch(); }} />}>작업 기록을 불러오지 못했습니다. {errorMessage(board.error)}{board.data ? " 마지막으로 받은 내용이 표시됩니다." : ""}</Banner></View> : null}
@@ -300,7 +300,7 @@ function HostWorklogBoard(props: PluginScreenProps & { runtime: RuntimeStatus; r
         <TextInput accessibilityLabel="작업 검색" value={search} onChangeText={setSearch} placeholder="작업, 프로젝트, 다음 행동 검색…"
           placeholderTextColor={colors.foregroundMuted} style={{ color: colors.foreground, borderWidth: 1, borderColor: colors.border,
             backgroundColor: colors.surface1, borderRadius: 8, paddingHorizontal: 12, paddingVertical: 9, fontSize: 12, flex: 1, maxWidth: 400 }} />
-        <Button small label={board.isFetching ? "갱신 중…" : "새로고침"} colors={colors} variant="ghost" onPress={refresh} disabled={board.isFetching} />
+        <Button small label={board.isFetching ? "새로고침 중…" : "새로고침"} colors={colors} variant="ghost" onPress={refresh} disabled={board.isFetching} />
         {compact ? <Button small label="내보내기" colors={colors} variant="ghost" onPress={() => setExportOpen(true)} /> : null}
       </View>
       {projects.length ? <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }}>
@@ -346,18 +346,18 @@ function HostWorklogBoard(props: PluginScreenProps & { runtime: RuntimeStatus; r
           </View>;
         })}
       </ScrollView>
-      {!activeTasks.length ? <View style={{ paddingHorizontal: 24, paddingBottom: 14 }}><Body colors={colors} muted style={{ fontSize: 11 }}>새 작업을 직접 적거나, 세션 인박스에서 진행 중인 대화를 작업에 연결하세요.</Body></View> : null}
+      {!activeTasks.length ? <View style={{ paddingHorizontal: 24, paddingBottom: 14 }}><Body colors={colors} muted style={{ fontSize: 11 }}>새 작업을 직접 적거나, 세션 인박스에서 진행 중인 세션을 작업에 연결하세요.</Body></View> : null}
     </View> : null}
 
     {section === "inbox" ? <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: compact ? 16 : 24, gap: 18, flexGrow: 1 }}>
       <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
         <View style={{ flex: 1, gap: 4 }}><Text style={{ color: colors.foreground, fontSize: 17, fontWeight: "700" }}>연결할 세션</Text>
-          <Body colors={colors} muted style={{ fontSize: 12 }}>중앙 서버가 저장한 세션 목록입니다. 필요한 대화만 작업으로 남기세요.</Body></View>
-        <Button label={roster.loading ? "확인 중…" : "수집 요청"} colors={colors} small onPress={roster.refresh} disabled={roster.loading} />
+          <Body colors={colors} muted style={{ fontSize: 12 }}>중앙 보드에 저장된 세션 목록입니다. 필요한 세션만 작업으로 남기세요.</Body></View>
+        <Button label={roster.loading ? "요청 중…" : "수집 요청"} colors={colors} small onPress={roster.refresh} disabled={roster.loading} />
       </View>
       <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
-        <Body colors={colors} muted style={{ fontSize: 11 }}>{props.runtime.snapshot.config.enabled ? "백그라운드 수집 · 앱을 닫아도 데몬에서 이어집니다." : "백그라운드 수집이 꺼져 있습니다. 마지막 관측을 표시합니다."}</Body>
-        <Button label="호스트 설정" colors={colors} small variant="ghost" onPress={props.onOpenConnection} />
+        <Body colors={colors} muted style={{ fontSize: 11 }}>{props.runtime.snapshot.config.enabled ? "백그라운드 수집 · 앱을 닫아도 데몬에서 이어집니다." : "백그라운드 연결이 꺼져 있습니다. 마지막 관측을 표시합니다."}</Body>
+        <Button label="연결 설정" colors={colors} small variant="ghost" onPress={props.onOpenConnection} />
       </View>
       <HostHealthList hosts={roster.hosts} colors={colors} />
       {roster.notice ? <Body colors={colors} muted style={{ fontSize: 11 }}>{roster.notice}</Body> : null}
@@ -374,7 +374,7 @@ function HostWorklogBoard(props: PluginScreenProps & { runtime: RuntimeStatus; r
           <Button label="기존 작업에 연결" colors={colors} small variant="ghost" onPress={() => { setLinkingSession(session); setLinkSearch(""); setActionError(null); }} disabled={writesDisabled || !activeTasks.length} />
         </View>
       </View>)}
-      {!inbox.length && !roster.loading ? <Empty colors={colors} title="연결하지 않은 세션이 없습니다" subtitle="새 세션이 나타나면 이곳에서 확인할 수 있습니다. 이미 연결한 대화는 각 작업 안에 남아 있습니다." /> : null}
+      {!inbox.length && !roster.loading ? <Empty colors={colors} title="새로 연결할 세션이 없습니다" subtitle="새 세션이 나타나면 이곳에서 확인할 수 있습니다. 이미 연결한 세션은 각 작업에서 볼 수 있습니다." /> : null}
       <Body colors={colors} muted style={{ fontSize: 11 }}>실행 상태는 대화의 현재 상태입니다. 세션이 멈추거나 끝나도 작업을 자동으로 완료하지 않습니다.</Body>
     </ScrollView> : null}
 
@@ -398,25 +398,25 @@ function HostWorklogBoard(props: PluginScreenProps & { runtime: RuntimeStatus; r
       {!archived.filter(matches).length ? <Empty colors={colors} title="보관한 작업이 없습니다" subtitle="정리한 작업은 삭제하는 대신 보관할 수 있습니다." /> : null}
     </ScrollView> : null}
 
-    {editor ? <Drawer title={editor.task ? "작업 기록" : "새 작업"} subtitle={editor.task ? `수정 ${dateLabel(editor.task.updatedAt)} · r${editor.task.revision}` : "작은 단위로 적고, 결과와 다음 행동을 이어가세요."}
+    {editor ? <Drawer title={editor.task ? "작업 상세" : "새 작업"} subtitle={editor.task ? `수정 ${dateLabel(editor.task.updatedAt)} · r${editor.task.revision}` : "작은 단위로 적고, 결과와 다음 행동을 이어가세요."}
       colors={colors} compact={compact} onClose={closeEditor}
       footer={<>
         {closeIntent ? <Banner colors={colors} action={<View style={{ flexDirection: "row", gap: 8 }}>
           <Button small label="계속 편집" colors={colors} onPress={() => setCloseIntent(false)} />
-          <Button small label="변경 버리고 닫기" colors={colors} variant="danger" onPress={() => { setEditor(null); setCloseIntent(false); setActionError(null); setConflict(null); }} />
-        </View>}>저장하지 않은 입력이 있습니다.</Banner> : null}
-        {uncertain ? <Button label={busy ? "결과 확인 중…" : "같은 요청으로 결과 확인"} colors={colors} onPress={retryPending} disabled={busy} /> : null}
+          <Button small label="저장하지 않고 닫기" colors={colors} variant="danger" onPress={() => { setEditor(null); setCloseIntent(false); setActionError(null); setConflict(null); }} />
+        </View>}>저장하지 않은 내용이 있습니다.</Banner> : null}
+        {uncertain ? <Button label={busy ? "결과 확인 중…" : "결과 다시 확인"} colors={colors} onPress={retryPending} disabled={busy} /> : null}
         <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: 10 }}>
           {editor.task ? <Button label={editor.task.archivedAt ? "보드로 복원" : "보관"} colors={colors} small variant="ghost" disabled={writesDisabled || editorDirty}
             onPress={() => { const task = editor.task; if (task) send({ op: task.archivedAt ? "restore" : "archive", requestId: newRequestId(), taskId: task.id, expectedRevision: task.revision }, (updated) => { acceptTask(updated); setSection(updated.archivedAt ? "archive" : "board"); }); }} />
-            : <Body colors={colors} muted style={{ fontSize: 11 }}>제목만으로도 시작할 수 있어요.</Body>}
+            : <Body colors={colors} muted style={{ fontSize: 11 }}>제목만으로도 시작할 수 있습니다.</Body>}
           <Button label={busy ? "저장 중…" : editor.task ? "변경 저장" : "작업 만들기"} colors={colors} variant="primary" onPress={saveEditor} disabled={writesDisabled || (!!editor.task && !editorDirty)} />
         </View>
       </>}>
       {actionBanner}
       {conflict && conflict.id === editor.task?.id ? <Banner danger colors={colors}
-        action={<Button label="서버 내용으로 다시 열기 · 초안 교체" colors={colors} small onPress={() => { acceptTask(conflict); setNote(""); }} />}>
-        다른 변경이 먼저 저장되었습니다. 현재 서버 기록: {conflict.title} / {STATUS_LABELS[conflict.status]} / r{conflict.revision}{"\n"}{conflict.summary || "요약 없음"}{conflict.nextAction ? `\n다음 행동: ${conflict.nextAction}` : ""}
+        action={<Button label="서버 내용으로 교체" colors={colors} small onPress={() => { acceptTask(conflict); setNote(""); }} />}>
+        다른 곳에서 이 작업이 먼저 수정되었습니다. 현재 서버 기록: {conflict.title} / {STATUS_LABELS[conflict.status]} / r{conflict.revision}{"\n"}{conflict.summary || "요약 없음"}{conflict.nextAction ? `\n다음 행동: ${conflict.nextAction}` : ""}
       </Banner> : null}
       {!conflict && editorLatest && editorLatest.revision !== editor.task?.revision ? <Banner colors={colors}
         action={!editorDirty ? <Button label="최신 내용 불러오기" colors={colors} small onPress={() => acceptTask(editorLatest)} /> : undefined}>
@@ -427,8 +427,8 @@ function HostWorklogBoard(props: PluginScreenProps & { runtime: RuntimeStatus; r
         {([ ["details", "작업 내용"], ["sessions", `연결 세션 ${editor.task.sessions.length}`], ["activity", "기록·메모"] ] as const).map(([key, label]) => <Chip key={key} label={label} colors={colors} selected={editorSection === key} onPress={() => setEditorSection(key)} />)}
       </View> : null}
       {editorSection === "details" ? <>
-        <Field label="작업 제목" value={editor.fields.title} onChange={(value) => updateField("title", value)} colors={colors} placeholder="예: N01 증례의 문진 항목 검토" disabled={busy || uncertain} maxLength={200} />
-        <Field label="프로젝트" value={editor.fields.project} onChange={(value) => updateField("project", value)} colors={colors} placeholder="예: project_CPX" disabled={busy || uncertain} maxLength={200} />
+        <Field label="작업 제목" value={editor.fields.title} onChange={(value) => updateField("title", value)} colors={colors} placeholder="예: 로그인 오류 원인 정리" disabled={busy || uncertain} maxLength={200} />
+        <Field label="프로젝트" value={editor.fields.project} onChange={(value) => updateField("project", value)} colors={colors} placeholder="예: my-app" disabled={busy || uncertain} maxLength={200} />
         <View style={{ gap: 7 }}><Body colors={colors} muted style={{ fontSize: 11, fontWeight: "600" }}>작업 상태</Body><StatusPicker value={editor.fields.status} onChange={(value) => updateField("status", value)} colors={colors} disabled={busy || uncertain} /></View>
         <View style={{ gap: 7 }}><Body colors={colors} muted style={{ fontSize: 11, fontWeight: "600" }}>우선순위</Body>
           <View style={{ flexDirection: "row", gap: 6 }}>{([ ["high", "높음"], ["normal", "보통"], ["low", "낮음"] ] as const).map(([value, label]) => <Chip key={value} label={label} colors={colors} selected={editor.fields.priority === value} onPress={busy || uncertain ? undefined : () => updateField("priority", value)} />)}</View>
@@ -444,8 +444,8 @@ function HostWorklogBoard(props: PluginScreenProps & { runtime: RuntimeStatus; r
         {editor.session ? <Banner colors={colors}>만들 때 연결할 세션: {editor.session.title || editor.session.agentId}{"\n"}{editor.session.hostLabel} · {editor.session.provider}</Banner> : null}
       </> : null}
       {editorSection === "sessions" && editor.task ? <>
-        <Body colors={colors} muted style={{ fontSize: 12 }}>한 작업에 여러 호스트의 대화를 연결할 수 있습니다. 실행 상태와 작업 상태는 별도로 기록됩니다.</Body>
-        {editorDirty ? <Banner colors={colors}>작성 중인 변경을 먼저 저장한 뒤 세션을 연결하거나 해제하세요.</Banner> : null}
+        <Body colors={colors} muted style={{ fontSize: 12 }}>한 작업에 여러 호스트의 세션을 연결할 수 있습니다. 실행 상태와 작업 상태는 별도로 기록됩니다.</Body>
+        {editorDirty ? <Banner colors={colors}>수정 중인 내용을 먼저 저장한 뒤 세션을 연결하거나 해제하세요.</Banner> : null}
         {editor.task.sessions.map((saved) => {
           const live = liveSessions.get(sessionKey(saved));
           return <View key={sessionKey(saved)} style={{ gap: 9, padding: 13, borderWidth: 1, borderColor: colors.border, borderRadius: 9 }}>
@@ -469,7 +469,7 @@ function HostWorklogBoard(props: PluginScreenProps & { runtime: RuntimeStatus; r
       {editorSection === "activity" && editor.task ? <>
         <Field label="메모 남기기" value={note} onChange={setNote} colors={colors} placeholder="결정한 내용이나 다음에 참고할 사항" multiline disabled={busy || uncertain} maxLength={10000} />
         <Button label="메모 추가" colors={colors} disabled={writesDisabled || editorDirty || !note.trim()} onPress={() => { const task = editor.task; if (task) send({ op: "note", requestId: newRequestId(), taskId: task.id, expectedRevision: task.revision, message: note.trim() }, (updated) => { acceptTask(updated); setNote(""); }); }} />
-        {editorDirty ? <Body colors={colors} muted style={{ fontSize: 11 }}>작성 중인 작업 변경을 먼저 저장하세요.</Body> : null}
+        {editorDirty ? <Body colors={colors} muted style={{ fontSize: 11 }}>수정 중인 작업 내용을 먼저 저장하세요.</Body> : null}
         <View style={{ height: 1, backgroundColor: colors.border }} />
         {activityQuery.isError ? <Banner colors={colors} danger>{errorMessage(activityQuery.error)}</Banner> : null}
         <Timeline items={activityQuery.data?.activities ?? []} colors={colors} />
@@ -488,9 +488,9 @@ function HostWorklogBoard(props: PluginScreenProps & { runtime: RuntimeStatus; r
     </Drawer> : null}
 
     {exportOpen ? <Drawer title="작업 기록 내보내기" subtitle={`저장 호스트 · ${props.host.label}`} colors={colors} compact={compact} onClose={() => setExportOpen(false)}>
-      <Body colors={colors} muted>JSON은 전체 작업과 기록의 보관용입니다. Markdown은 읽고 공유하기 좋은 문서로 내보냅니다.</Body>
+      <Body colors={colors} muted>JSON은 전체 작업과 기록을 보관하는 용도입니다. Markdown은 읽고 공유하기 좋은 문서입니다.</Body>
       <View style={{ flexDirection: "row", gap: 8 }}>
-        <Button label="JSON 백업" colors={colors} disabled={exporting} onPress={() => { void runExport("json"); }} />
+        <Button label="JSON 내보내기" colors={colors} disabled={exporting} onPress={() => { void runExport("json"); }} />
         <Button label="Markdown 내보내기" colors={colors} disabled={exporting} onPress={() => { void runExport("markdown"); }} />
       </View>
       {exporting ? <Body colors={colors} muted>내보내는 중…</Body> : null}

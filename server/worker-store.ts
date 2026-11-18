@@ -113,12 +113,12 @@ export class WorkerStore {
     const parsed = syncConfigSchema.safeParse(config);
     if (!parsed.success) return { ok: false, message: "동기화 설정이 올바르지 않습니다.", snapshot: this.readConfig() };
     const next = parsed.data;
-    if (next.role === "satellite" && !next.centralServerId) return { ok: false, message: "작업 PC는 중앙 서버 ID가 필요합니다.", snapshot: this.readConfig() };
+    if (next.role === "satellite" && !next.centralServerId) return { ok: false, message: "수집·보고 호스트는 중앙 서버 ID가 필요합니다.", snapshot: this.readConfig() };
     return this.transaction(() => {
       const previous = this.readConfig();
       if (previous.revision !== expectedRevision) return { ok: false, message: "설정이 다른 화면에서 변경되었습니다. 새로 읽은 뒤 저장하세요.", snapshot: previous };
       const identityChanged = previous.config.role !== next.role || previous.config.centralServerId !== next.centralServerId;
-      if (identityChanged && this.unsettledCount() > 0) return { ok: false, message: "전송 대기 또는 확인하지 않은 충돌 보고가 남아 있어 중앙 서버나 역할을 바꿀 수 없습니다.", snapshot: previous };
+      if (identityChanged && this.unsettledCount() > 0) return { ok: false, message: "전송 대기 보고나 확인하지 않은 보류 보고가 남아 있어 역할이나 중앙 서버 ID를 바꿀 수 없습니다.", snapshot: previous };
       if (canonical(previous.config) === canonical(next)) return { ok: true, snapshot: previous };
       this.db.prepare("UPDATE config SET revision=revision+1,config_json=? WHERE id=1").run(JSON.stringify(next));
       if (identityChanged) {
@@ -131,14 +131,14 @@ export class WorkerStore {
 
   private checkRoute(input: ExchangeInput, workerHostId: string): Binding {
     const config = this.readConfig().config;
-    if (config.role !== "satellite") throw new Error("WORKLOG_ROLE: 중앙 역할의 플러그인은 작업 PC 교환 요청을 받지 않습니다.");
-    if (!config.enabled) throw new Error("WORKLOG_PAUSED: 작업 PC 동기화가 일시 정지되어 있습니다.");
+    if (config.role !== "satellite") throw new Error("WORKLOG_ROLE: 이 호스트는 중앙 역할이라 수집·보고 교환 요청을 받지 않습니다.");
+    if (!config.enabled) throw new Error("WORKLOG_PAUSED: 수집·보고 호스트의 백그라운드 연결이 일시 정지되어 있습니다.");
     if (config.centralServerId !== input.centralServerId) throw new Error("WORKLOG_CENTRAL_ID: 설정한 중앙 서버와 요청한 중앙 서버가 다릅니다.");
-    if (!workerHostId || workerHostId.length > 256) throw new Error("작업 PC의 검증된 호스트 ID가 필요합니다.");
+    if (!workerHostId || workerHostId.length > 256) throw new Error("수집·보고 호스트의 검증된 호스트 ID가 필요합니다.");
     const bound = this.binding();
     if (bound.central_server_id && bound.central_server_id !== input.centralServerId) throw new Error("WORKLOG_CENTRAL_ID: 이미 다른 중앙 서버에 연결되어 있습니다.");
     if (bound.board_id && bound.board_id !== input.boardId) throw new Error("WORKLOG_BOARD_ID: 중앙 보드 ID가 기존 연결과 다릅니다. 기존 보고를 다른 보드로 보내지 않았습니다.");
-    if (bound.worker_host_id && bound.worker_host_id !== workerHostId) throw new Error("작업 PC 호스트 ID가 기존 연결과 다릅니다.");
+    if (bound.worker_host_id && bound.worker_host_id !== workerHostId) throw new Error("수집·보고 호스트 ID가 기존 연결과 다릅니다.");
     return bound;
   }
 
@@ -151,7 +151,7 @@ export class WorkerStore {
       const taskIds = new Set<string>();
       const agents = new Set<string>();
       for (const task of input.tasks) {
-        if (task.archivedAt || !task.sessions.some((session) => session.hostId === workerHostId)) throw new Error("작업 PC에 연결되지 않았거나 보관된 작업을 캐시에 넣을 수 없습니다.");
+        if (task.archivedAt || !task.sessions.some((session) => session.hostId === workerHostId)) throw new Error("이 호스트에 연결되지 않았거나 보관된 작업은 캐시에 넣을 수 없습니다.");
         if (taskIds.has(task.id)) throw new Error("중복된 작업 ID를 보냈습니다.");
         taskIds.add(task.id);
         for (const session of task.sessions.filter((entry) => entry.hostId === workerHostId)) {
@@ -210,14 +210,14 @@ export class WorkerStore {
   }
 
   private queuedResult(row: DeliveryRow): QueueResult {
-    if (row.state === "applied") return { delivery: "applied", deliveryId: row.delivery_id, requestId: row.request_id, message: "이 보고는 중앙 보드에 이미 적용되었습니다." };
+    if (row.state === "applied") return { delivery: "applied", deliveryId: row.delivery_id, requestId: row.request_id, message: "이 보고는 중앙 보드에 이미 반영되었습니다." };
     if (row.state === "blocked") {
       const result = row.result_json ? reportOutcomeSchema.parse(JSON.parse(row.result_json)) : null;
       return { delivery: "blocked", deliveryId: row.delivery_id, requestId: row.request_id,
-        message: result && !result.ok ? result.message : "보고가 충돌로 보존되어 있습니다. 현재 작업을 확인하고 새 요청으로 보고하세요." };
+        message: result && !result.ok ? result.message : "보고가 보류 상태로 보존되어 있습니다. 현재 작업을 확인하고 새 요청으로 보고하세요." };
     }
     return { delivery: "queued", deliveryId: row.delivery_id, requestId: row.request_id, queuedAt: row.created_at,
-      message: "이 PC에 보고를 저장했습니다. 아직 중앙 보드에는 적용되지 않았으며 다음 연결 때 전달됩니다." };
+      message: "이 PC에 보고를 저장했습니다. 아직 중앙 보드에는 반영되지 않았으며 다음 연결 때 전달됩니다." };
   }
 
   enqueue(hostId: string, agentId: string, value: AgentReport): QueueResult {
@@ -229,7 +229,7 @@ export class WorkerStore {
     const report = parsed.data;
     return this.transaction(() => {
       const config = this.readConfig().config;
-      if (config.role !== "satellite" || !config.enabled) return invalid("작업 PC 동기화를 켠 상태에서만 보고를 저장할 수 있습니다.");
+      if (config.role !== "satellite" || !config.enabled) return invalid("이 호스트의 백그라운드 연결이 켜져 있어야 보고를 저장할 수 있습니다.");
       const bound = this.binding();
       if (!bound.board_id || bound.worker_host_id !== hostId || bound.central_server_id !== config.centralServerId) return invalid("중앙 보드와 이 PC의 첫 연결이 필요합니다.");
       const hash = createHash("sha256").update(canonical({ hostId, agentId, report })).digest("hex");
@@ -237,9 +237,9 @@ export class WorkerStore {
         .get(bound.central_server_id, bound.board_id, hostId, agentId, report.requestId) as DeliveryRow | undefined;
       if (old) return old.payload_hash === hash ? this.queuedResult(old) : invalid("같은 요청 ID를 다른 보고에 재사용할 수 없습니다.", old.delivery_id);
       const cached = this.getLinkedTask(hostId, agentId).task;
-      if (!cached || cached.id !== report.taskId) return invalid("이 세션에 연결된 캐시 작업이 아닙니다. 현재 연결 작업을 먼저 읽으세요.");
-      if (cached.revision !== report.expectedRevision) return invalid("캐시의 작업 버전이 변경되었습니다. 현재 작업을 읽고 새 요청으로 보고하세요.");
-      if (this.unsettledCount() >= MAX_UNSETTLED) return invalid("대기 중이거나 확인하지 않은 보고가 1,000개입니다. 기존 보고는 삭제하지 않았습니다.");
+      if (!cached || cached.id !== report.taskId) return invalid("캐시 기준으로 이 세션에 연결된 작업이 아닙니다. 현재 연결된 작업을 먼저 읽으세요.");
+      if (cached.revision !== report.expectedRevision) return invalid("캐시의 작업 수정 버전이 변경되었습니다. 현재 작업을 읽고 새 요청으로 보고하세요.");
+      if (this.unsettledCount() >= MAX_UNSETTLED) return invalid("전송 대기·미확인 보류 보고가 한도(1,000개)에 도달했습니다. 기존 보고는 삭제하지 않았습니다.");
       const id = randomUUID();
       this.db.prepare(`INSERT INTO outbox (delivery_id,central_server_id,board_id,worker_host_id,agent_id,request_id,payload_hash,report_json,state,created_at)
         VALUES (?,?,?,?,?,?,?,?,'queued',?)`).run(id, bound.central_server_id, bound.board_id, hostId, agentId, report.requestId, hash, JSON.stringify(report), new Date().toISOString());
@@ -272,7 +272,7 @@ export class WorkerStore {
   dismiss(deliveryId: string): WorkerState {
     return this.transaction(() => {
       const row = this.db.prepare("SELECT * FROM outbox WHERE delivery_id=?").get(deliveryId) as DeliveryRow | undefined;
-      if (!row || row.state !== "blocked") throw new Error("충돌로 보존된 보고만 확인 처리할 수 있습니다. 전송 대기 보고는 삭제하지 않습니다.");
+      if (!row || row.state !== "blocked") throw new Error("보류된 보고만 확인 표시할 수 있습니다. 전송 대기 보고는 삭제하지 않습니다.");
       if (!row.dismissed_at) this.db.prepare("UPDATE outbox SET dismissed_at=? WHERE delivery_id=?").run(new Date().toISOString(), deliveryId);
       return this.state();
     });

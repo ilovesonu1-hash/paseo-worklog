@@ -16,7 +16,7 @@ export function changedFields(before: TaskFields, after: TaskFields): Partial<Ta
 }
 
 export const STATUS_HINT: Record<TaskStatus, string> = {
-  todo: "다음으로 할 일", doing: "현재 진행하는 일", review: "결과를 확인할 일",
+  todo: "다음에 할 일", doing: "현재 진행하는 일", review: "결과를 확인할 일",
   blocked: "도움이나 결정이 필요한 일", done: "확인하고 마친 일",
 };
 

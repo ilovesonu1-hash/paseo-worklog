@@ -36,7 +36,7 @@ export function useSessionRoster(hostId: string): SessionRosterResult {
     void (async () => {
       try {
         const result = await scheduleRefresh({});
-        setNotice(result.scheduled ? "백그라운드 수집을 요청했습니다. 완료 여부는 마지막 성공 시각에서 확인할 수 있습니다." : "현재 수집을 시작하지 않았습니다. 연결 설정과 실행 상태를 확인하세요.");
+        setNotice(result.scheduled ? "백그라운드 수집을 요청했습니다. 완료 여부는 마지막 성공 시각에서 확인할 수 있습니다." : "수집이 시작되지 않았습니다. 연결 설정과 실행 상태를 확인하세요.");
         await queryClient.invalidateQueries({ queryKey: ["worklog", hostId, "roster"] });
         await queryClient.invalidateQueries({ queryKey: ["worklog", hostId, "runtime"] });
       } catch (error) { setRefreshError(errorMessage(error)); }
