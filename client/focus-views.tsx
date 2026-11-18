@@ -93,13 +93,13 @@ export function FocusQueueView(props: FocusViewProps) {
   const working = [...props.liveSessions.values()].filter((session) => session.execution === "working").length;
   return <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: compact ? 16 : 24, gap: 14, maxWidth: 900, width: "100%", flexGrow: 1 }}>
     <View style={{ gap: 4 }}>
-      <Text style={{ color: colors.foreground, fontSize: 17, fontWeight: "700" }}>지금 볼 것 {queue.length}</Text>
+      <Text style={{ color: colors.foreground, fontSize: 17, fontWeight: "700" }}>확인 필요 {queue.length}</Text>
       <Body colors={colors} muted style={{ fontSize: 12 }}>모든 프로젝트에서 내 손이 필요한 작업과 세션을 모았습니다. 진행 중인 작업 {doing}개 · 실행 중인 세션 {working}개.</Body>
     </View>
     {props.inboxCount ? <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 10,
       padding: 12, borderWidth: 1, borderColor: colors.border, borderRadius: 9, backgroundColor: colors.surface1 }}>
-      <Body colors={colors} style={{ fontSize: 12, flex: 1 }}>작업에 연결하지 않은 세션 {props.inboxCount}개는 "프로젝트 흐름"에 폴더별로 자동 배치됩니다.</Body>
-      <Button small variant="ghost" label="세션 인박스" colors={colors} onPress={props.onOpenInbox} />
+      <Body colors={colors} style={{ fontSize: 12, flex: 1 }}>아직 작업에 연결하지 않은 세션이 {props.inboxCount}개 있습니다. "작업" 탭의 프로젝트별 보기에도 폴더별로 표시됩니다.</Body>
+      <Button small variant="ghost" label="새 세션 보기" colors={colors} onPress={props.onOpenInbox} />
     </View> : null}
     {FOCUS_ORDER.map((reason) => {
       const group = queue.filter((item) => item.reason === reason);
@@ -114,7 +114,7 @@ export function FocusQueueView(props: FocusViewProps) {
       </View>;
     })}
     {!queue.length ? <Empty colors={colors} title="지금 확인할 일이 없습니다"
-      subtitle={doing ? `진행 중인 작업 ${doing}개는 모두 다음 행동이 적혀 있고 막힌 곳이 없습니다.` : "권한이나 답변을 기다리는 세션도 없습니다. 프로젝트별 현황은 \"프로젝트 흐름\"에서 볼 수 있습니다."} /> : null}
+      subtitle={doing ? `진행 중인 작업 ${doing}개는 모두 다음 행동이 적혀 있고 막힌 곳이 없습니다.` : "권한이나 답변을 기다리는 세션도 없습니다. 프로젝트별 현황은 \"작업\" 탭에서 볼 수 있습니다."} /> : null}
     <Body colors={colors} muted style={{ fontSize: 11 }}>세션 상태는 수집이 정상인 호스트의 현재 관측만 반영합니다. 오래된 관측은 이 목록에 넣지 않습니다.</Body>
   </ScrollView>;
 }
@@ -162,7 +162,7 @@ function LaneHeader({ lane, props }: { lane: ProjectLane; props: FocusViewProps 
     <LiveDots lane={lane} colors={colors} />
     <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: 6 }}>
       <Text style={{ color: colors.foregroundMuted, fontSize: 10, flexShrink: 1 }}>{lane.lastUpdatedAt ? `최근 활동 ${shortAge(lane.lastUpdatedAt)}` : ""}{sessionCount(lane) ? ` · 자동 배치 세션 ${sessionCount(lane)}` : ""}{lane.dormant.length ? ` · 조용한 세션 ${lane.dormant.length}(${DEFAULT_RECENT_DAYS}일 넘게 활동 없음)` : ""}</Text>
-      {taskCount(lane) ? <Button small variant="ghost" label="보드에서 보기" colors={colors} onPress={() => props.onShowProject(lane.project)} /> : null}
+      {taskCount(lane) ? <Button small variant="ghost" label="이 프로젝트만 보기" colors={colors} onPress={() => props.onShowProject(lane.project)} /> : null}
     </View>
   </View>;
 }
@@ -202,9 +202,8 @@ const AUTO_COLUMN_FOR_STATUS: Partial<Record<TaskStatus, AutoColumn>> = { doing:
 export function ProjectFlowView(props: FocusViewProps & { viewportWidth: number }) {
   const { colors, compact } = props;
   const lanes = useMemo(() => buildProjectLanes(props.tasks, props.liveSessions), [props.tasks, props.liveSessions]);
-  if (!lanes.length) return <Empty colors={colors} title="아직 프로젝트가 없습니다" subtitle="세션이 수집되거나 작업에 프로젝트 이름을 적으면 프로젝트별 흐름이 여기에 나타납니다." />;
+  if (!lanes.length) return <Empty colors={colors} title="아직 프로젝트가 없습니다" subtitle="세션이 수집되거나 작업에 프로젝트 이름을 적으면 프로젝트마다 한 줄씩 여기에 나타납니다." />;
   const header = <View style={{ gap: 4, paddingBottom: 6 }}>
-    <Text style={{ color: colors.foreground, fontSize: 17, fontWeight: "700" }}>프로젝트 흐름</Text>
     <Body colors={colors} muted style={{ fontSize: 12 }}>프로젝트마다 지금 하는 일과 단계별 작업을 한 줄로 봅니다. 작업에 연결하지 않은 세션은 폴더 이름으로 자동 배치됩니다(점선 카드). "실행 중"은 "진행 중", "응답 완료"는 "검토", "권한·답변 필요"와 "오류"는 "막힘" 열에 놓입니다. {DEFAULT_RECENT_DAYS}일 넘게 활동이 없는 응답 완료 세션은 카드 대신 "조용한 세션" 개수로만 표시합니다.</Body>
   </View>;
 

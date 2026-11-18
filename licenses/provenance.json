@@ -1,5 +1,5 @@
 {
-  "worklogVersion": "0.3.1",
+  "worklogVersion": "0.3.2",
   "bundle": "server/vendor/paseo-sdk.cjs",
   "bundleSha256": "90a6e5dbad4f51da49723af185c85372222ae8031f5a2c42d0de2e438f4355ba",
   "metadata": "server/vendor/paseo-sdk.meta.json",

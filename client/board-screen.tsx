@@ -10,13 +10,15 @@ import { useSessionRoster } from "./use-session-roster";
 import { runtimeStatusRpc } from "../shared/sync";
 import type { RuntimeStatus } from "../shared/sync";
 import { ConnectionPanel, SatelliteScreen } from "./connection-panel";
-import { Banner, Body, Button, Chip, Drawer, Empty, Field, HostHealthList, SessionState, StatusPicker, statusColor, Timeline } from "./components";
+import { Banner, Body, Button, Chip, Drawer, Empty, Field, SessionState, StatusPicker, statusColor, Timeline } from "./components";
 import type { Colors } from "./components";
 import { changedFields, dateLabel, EMPTY_FIELDS, errorMessage, fieldsOf, sessionProject, shortAge, STATUS_HINT } from "./presentation";
 import { FocusQueueView, ProjectFlowView } from "./focus-views";
 import { buildFocusQueue } from "../shared/focus";
 
-type Section = "focus" | "flow" | "board" | "inbox" | "history" | "archive";
+type Section = "focus" | "work" | "inbox" | "history";
+/** The 작업 tab shows one task list three ways: per project row, all tasks by status, or archived tasks. */
+type WorkView = "projects" | "all" | "archive";
 type Editor = { task: Task | null; fields: TaskFields; session?: SessionSnapshot };
 type PendingMutation = { input: Mutation; onSuccess?: (task: Task) => void };
 
@@ -92,6 +94,7 @@ function HostWorklogBoard(props: PluginScreenProps & { runtime: RuntimeStatus; r
   const queryKey = ["worklog", props.host.id, "board"];
   const board = useQuery({ queryKey, queryFn: () => readBoard({}), refetchInterval: 15_000, retry: 1 });
   const [section, setSection] = useState<Section>("focus");
+  const [workView, setWorkView] = useState<WorkView>("projects");
   const [search, setSearch] = useState("");
   const [project, setProject] = useState<string | null>(null);
   const [compactStatus, setCompactStatus] = useState<TaskStatus>("todo");
@@ -136,11 +139,17 @@ function HostWorklogBoard(props: PluginScreenProps & { runtime: RuntimeStatus; r
   // All tasks, archived included: archived tasks keep their session links, so
   // those sessions must not be auto-placed. The views skip archived tasks themselves.
   const focusCount = buildFocusQueue(tasks, liveSessions).length;
+  // One line for the 새 세션 tab; the per-PC list lives in the connection panel.
+  const collectedHosts = roster.hosts.filter((host) => host.status !== "disabled");
+  const hostProblems = collectedHosts.filter((host) => host.status === "offline" || host.status === "error" || host.status === "stale").length;
+  const lastCollected = collectedHosts.map((host) => host.lastSuccessAt).filter((value): value is string => !!value).sort().at(-1);
+  const collectionSummary = !props.runtime.snapshot.config.enabled ? "백그라운드 연결이 꺼져 있습니다. 마지막 관측을 표시합니다."
+    : `PC ${collectedHosts.length}대에서 수집${lastCollected ? ` · 마지막 수집 ${shortAge(lastCollected)}` : ""}${hostProblems ? ` · 연결 확인 필요 ${hostProblems}대` : ""}`;
   const focusProps = {
     tasks, liveSessions, inboxCount: inbox.length, colors, compact,
     onOpenTask: openTask, canOpenSession, openSession, hasNavigation: !!props.navigation, writesDisabled,
     onRegisterSession: (session: SessionSnapshot) => newTask("todo", session),
-    onShowProject: (name: string) => { setProject(name); setSearch(""); setSection("board"); },
+    onShowProject: (name: string) => { setProject(name); setSearch(""); setSection("work"); setWorkView("all"); },
     onOpenInbox: () => setSection("inbox"),
   };
   const activityTaskId = editor?.task?.id;
@@ -233,7 +242,7 @@ function HostWorklogBoard(props: PluginScreenProps & { runtime: RuntimeStatus; r
       send({ op: "update", requestId: newRequestId(), taskId: editor.task.id, expectedRevision: editor.task.revision, patch }, acceptTask);
     } else {
       send({ op: "create", requestId: newRequestId(), fields, session: editor.session }, (task) => {
-        setEditor({ task, fields: fieldsOf(task) }); setSection("board"); setCompactStatus(task.status);
+        setEditor({ task, fields: fieldsOf(task) }); setSection("work"); setWorkView("all"); setCompactStatus(task.status);
       });
     }
   }
@@ -275,9 +284,8 @@ function HostWorklogBoard(props: PluginScreenProps & { runtime: RuntimeStatus; r
       <View style={{ flexDirection: "row", justifyContent: "space-between", gap: 12, alignItems: "center" }}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 5, alignItems: "center" }} style={{ flexGrow: 0, flexShrink: 1 }}>
           {([
-            ["focus", "지금 볼 것", focusCount], ["flow", "프로젝트 흐름", null],
-            ["board", "작업 보드", activeTasks.length], ["inbox", "세션 인박스", inbox.length],
-            ["history", "활동 기록", null], ["archive", "보관함", archived.length],
+            ["focus", "확인 필요", focusCount], ["work", "작업", activeTasks.length],
+            ["inbox", "새 세션", inbox.length], ["history", "기록", null],
           ] as const).map(([key, label, count]) => <Pressable key={key} accessibilityRole="tab" accessibilityLabel={label} accessibilityState={{ selected: section === key }}
             onPress={() => setSection(key)} style={{ flexDirection: "row", gap: 7, alignItems: "center", paddingHorizontal: 11, paddingVertical: 8,
               backgroundColor: section === key ? colors.surface2 : "transparent", borderRadius: 8 }}>
@@ -295,8 +303,13 @@ function HostWorklogBoard(props: PluginScreenProps & { runtime: RuntimeStatus; r
       <Text style={{ color: colors.statusSuccess, fontSize: 11 }}>{notice}</Text><Button label="닫기" colors={colors} small variant="ghost" onPress={() => setNotice(null)} /></View> : null}
     {board.isError ? <View style={{ padding: 16 }}><Banner danger colors={colors} action={<Button small label="다시 불러오기" colors={colors} onPress={() => { void board.refetch(); }} />}>작업 기록을 불러오지 못했습니다. {errorMessage(board.error)}{board.data ? " 마지막으로 받은 내용이 표시됩니다." : ""}</Banner></View> : null}
 
-    {(section === "board" || section === "archive") && board.data ? <View style={{ paddingHorizontal: compact ? 16 : 24, paddingVertical: 13, gap: 10 }}>
-      <View style={{ flexDirection: "row", gap: 9, alignItems: "center" }}>
+    {section === "work" && board.data ? <View style={{ paddingHorizontal: compact ? 16 : 24, paddingTop: 13, paddingBottom: workView === "projects" ? 0 : 13, gap: 10 }}>
+      <View accessibilityRole="tablist" style={{ flexDirection: "row", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
+        <Text style={{ color: colors.foregroundMuted, fontSize: 11, marginRight: 2 }}>보기</Text>
+        {([["projects", "프로젝트별"], ["all", "전체"], ["archive", `보관함 ${archived.length}`]] as const).map(([key, label]) =>
+          <Chip key={key} label={label} colors={colors} selected={workView === key} onPress={() => setWorkView(key)} />)}
+      </View>
+      {workView !== "projects" ? <><View style={{ flexDirection: "row", gap: 9, alignItems: "center" }}>
         <TextInput accessibilityLabel="작업 검색" value={search} onChangeText={setSearch} placeholder="작업, 프로젝트, 다음 행동 검색…"
           placeholderTextColor={colors.foregroundMuted} style={{ color: colors.foreground, borderWidth: 1, borderColor: colors.border,
             backgroundColor: colors.surface1, borderRadius: 8, paddingHorizontal: 12, paddingVertical: 9, fontSize: 12, flex: 1, maxWidth: 400 }} />
@@ -307,15 +320,15 @@ function HostWorklogBoard(props: PluginScreenProps & { runtime: RuntimeStatus; r
         <Chip label="모든 프로젝트" colors={colors} selected={project === null} onPress={() => setProject(null)} />
         {projects.map((name) => <Chip key={name} label={name} colors={colors} selected={project === name} onPress={() => setProject(name)} />)}
         {tasks.some((task) => !task.project) ? <Chip label="미지정" colors={colors} selected={project === ""} onPress={() => setProject("")} /> : null}
-      </ScrollView> : null}
+      </ScrollView> : null}</> : null}
     </View> : null}
 
     {!board.data && board.isPending ? <Empty colors={colors} title="작업 기록을 불러오는 중…" subtitle="이 호스트에 저장한 작업을 불러옵니다." /> : null}
 
     {section === "focus" && board.data ? <FocusQueueView {...focusProps} /> : null}
-    {section === "flow" && board.data ? <ProjectFlowView {...focusProps} viewportWidth={viewportWidth} /> : null}
+    {section === "work" && workView === "projects" && board.data ? <ProjectFlowView {...focusProps} viewportWidth={viewportWidth} /> : null}
 
-    {section === "board" && board.data ? <View style={{ flex: 1, minHeight: 0 }}>
+    {section === "work" && workView === "all" && board.data ? <View style={{ flex: 1, minHeight: 0 }}>
       {compact ? <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexGrow: 0 }} contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 12, gap: 6 }}>
         {STATUS_ORDER.map((status) => <Chip key={status} label={`${STATUS_LABELS[status]} ${visibleTasks.filter((task) => task.status === status).length}`} colors={colors}
           tone={compactStatus === status ? statusColor(status, colors) : undefined} selected={compactStatus === status} onPress={() => setCompactStatus(status)} />)}
@@ -346,20 +359,19 @@ function HostWorklogBoard(props: PluginScreenProps & { runtime: RuntimeStatus; r
           </View>;
         })}
       </ScrollView>
-      {!activeTasks.length ? <View style={{ paddingHorizontal: 24, paddingBottom: 14 }}><Body colors={colors} muted style={{ fontSize: 11 }}>새 작업을 직접 적거나, 세션 인박스에서 진행 중인 세션을 작업에 연결하세요.</Body></View> : null}
+      {!activeTasks.length ? <View style={{ paddingHorizontal: 24, paddingBottom: 14 }}><Body colors={colors} muted style={{ fontSize: 11 }}>새 작업을 직접 적거나, "새 세션"에서 진행 중인 세션을 작업에 연결하세요.</Body></View> : null}
     </View> : null}
 
     {section === "inbox" ? <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: compact ? 16 : 24, gap: 18, flexGrow: 1 }}>
       <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
-        <View style={{ flex: 1, gap: 4 }}><Text style={{ color: colors.foreground, fontSize: 17, fontWeight: "700" }}>연결할 세션</Text>
-          <Body colors={colors} muted style={{ fontSize: 12 }}>중앙 보드에 저장된 세션 목록입니다. 필요한 세션만 작업으로 남기세요.</Body></View>
+        <View style={{ flex: 1, gap: 4 }}><Text style={{ color: colors.foreground, fontSize: 17, fontWeight: "700" }}>새 세션 {inbox.length}</Text>
+          <Body colors={colors} muted style={{ fontSize: 12 }}>아직 어느 작업에도 연결하지 않은 세션입니다. 남길 세션만 작업으로 등록하거나 기존 작업에 연결하세요.</Body></View>
         <Button label={roster.loading ? "요청 중…" : "수집 요청"} colors={colors} small onPress={roster.refresh} disabled={roster.loading} />
       </View>
       <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
-        <Body colors={colors} muted style={{ fontSize: 11 }}>{props.runtime.snapshot.config.enabled ? "백그라운드 수집 · 앱을 닫아도 데몬에서 이어집니다." : "백그라운드 연결이 꺼져 있습니다. 마지막 관측을 표시합니다."}</Body>
-        <Button label="연결 설정" colors={colors} small variant="ghost" onPress={props.onOpenConnection} />
+        <Body colors={colors} muted style={{ fontSize: 11, flexShrink: 1 }}>{collectionSummary}</Body>
+        <Button label="연결 상태" colors={colors} small variant="ghost" onPress={props.onOpenConnection} />
       </View>
-      <HostHealthList hosts={roster.hosts} colors={colors} />
       {roster.notice ? <Body colors={colors} muted style={{ fontSize: 11 }}>{roster.notice}</Body> : null}
       {roster.error ? <Banner colors={colors} danger>{roster.error}</Banner> : null}
       {inbox.map((session) => <View key={sessionKey(session)} style={{ borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surface1, borderRadius: 11, padding: 16, gap: 10 }}>
@@ -386,8 +398,8 @@ function HostWorklogBoard(props: PluginScreenProps & { runtime: RuntimeStatus; r
       {activityQuery.data?.hasMore ? <Body colors={colors} muted style={{ fontSize: 11 }}>최근 100개 기록을 표시합니다. 전체 기록은 JSON 내보내기로 보관할 수 있습니다.</Body> : null}
     </ScrollView> : null}
 
-    {section === "archive" && board.data ? <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: compact ? 16 : 24, paddingBottom: 24, gap: 10, flexGrow: 1 }}>
-      <Body colors={colors} muted style={{ fontSize: 12, marginBottom: 5 }}>보관한 작업은 기록과 연결을 유지합니다. 필요할 때 다시 보드로 가져오세요.</Body>
+    {section === "work" && workView === "archive" && board.data ? <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: compact ? 16 : 24, paddingBottom: 24, gap: 10, flexGrow: 1 }}>
+      <Body colors={colors} muted style={{ fontSize: 12, marginBottom: 5 }}>보관한 작업은 기록과 연결을 유지합니다. 복원하면 작업 목록으로 돌아옵니다.</Body>
       {archived.filter(matches).map((task) => <View key={task.id} style={{ flexDirection: "row", alignItems: "center", gap: 12, padding: 16, borderWidth: 1, borderColor: colors.border, borderRadius: 10, backgroundColor: colors.surface1 }}>
         <Pressable onPress={() => openTask(task)} accessibilityRole="button" style={{ flex: 1, gap: 5 }}>
           <Text style={{ color: colors.foreground, fontSize: 13, fontWeight: "600" }}>{task.title}</Text>
@@ -408,7 +420,7 @@ function HostWorklogBoard(props: PluginScreenProps & { runtime: RuntimeStatus; r
         {uncertain ? <Button label={busy ? "결과 확인 중…" : "결과 다시 확인"} colors={colors} onPress={retryPending} disabled={busy} /> : null}
         <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: 10 }}>
           {editor.task ? <Button label={editor.task.archivedAt ? "보드로 복원" : "보관"} colors={colors} small variant="ghost" disabled={writesDisabled || editorDirty}
-            onPress={() => { const task = editor.task; if (task) send({ op: task.archivedAt ? "restore" : "archive", requestId: newRequestId(), taskId: task.id, expectedRevision: task.revision }, (updated) => { acceptTask(updated); setSection(updated.archivedAt ? "archive" : "board"); }); }} />
+            onPress={() => { const task = editor.task; if (task) send({ op: task.archivedAt ? "restore" : "archive", requestId: newRequestId(), taskId: task.id, expectedRevision: task.revision }, (updated) => { acceptTask(updated); setSection("work"); setWorkView(updated.archivedAt ? "archive" : "all"); }); }} />
             : <Body colors={colors} muted style={{ fontSize: 11 }}>제목만으로도 시작할 수 있습니다.</Body>}
           <Button label={busy ? "저장 중…" : editor.task ? "변경 저장" : "작업 만들기"} colors={colors} variant="primary" onPress={saveEditor} disabled={writesDisabled || (!!editor.task && !editorDirty)} />
         </View>

@@ -11,10 +11,10 @@ function WorklogPanel(props: PluginWorkspacePanelProps) {
 }
 
 export default function contribute(client: PluginClientContext) {
-  client.addScreen({ id: "board", title: "Worklog · 작업 보드", Component: WorklogBoardScreen });
+  client.addScreen({ id: "board", title: "Worklog", Component: WorklogBoardScreen });
   client.addSidebarHeaderItem({ id: "board", title: "Worklog", Component: WorklogSidebar });
   client.addWorkspacePanel({ id: "board", title: "Worklog", icon: "ListTodo", context: "workspace", Component: WorklogPanel });
-  client.addCommandCenterItem({ id: "open-board", title: "Worklog 작업 보드 열기", icon: "ListTodo", context: "global", onSelect({ openScreen }) { openScreen({ screenId: "board" }); } });
+  client.addCommandCenterItem({ id: "open-board", title: "Worklog 열기", icon: "ListTodo", context: "global", onSelect({ openScreen }) { openScreen({ screenId: "board" }); } });
   client.addSlashCommand({ name: "worklog", description: "할 일·한 일·다음 행동을 기록하는 작업 보드", argumentHint: "", context: "workspace", onSubmit({ openScreen }) { openScreen({ screenId: "board" }); } });
   return () => {};
 }
