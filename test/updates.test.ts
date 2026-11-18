@@ -32,6 +32,7 @@ function harness(t: TestContext) {
   const make = () => new PluginUpdater({
     statePath: join(directory, "update-state.json"),
     now: () => new Date(clock),
+    retryMs: 1,
     local: async () => ({ updates: {
       preview: () => fake.preview(),
       apply: (proposals) => { fake.applied.push(proposals); return fake.apply(proposals); },
@@ -41,6 +42,10 @@ function harness(t: TestContext) {
 }
 
 const settle = () => new Promise((resolve) => setImmediate(resolve));
+async function until(condition: () => boolean, label: string) {
+  for (let i = 0; i < 200; i++) { if (condition()) return; await new Promise((resolve) => setTimeout(resolve, 2)); }
+  assert.fail(`timed out waiting for ${label}`);
+}
 
 test("check maps an available update with its compare link", async (t) => {
   const { fake, make } = harness(t);
@@ -159,4 +164,52 @@ test("a check failure keeps the last known revision", async (t) => {
   const status = await updater.check();
   assert.equal(status.check?.outcome, "error");
   assert.equal(status.check?.currentRevision, A);
+});
+
+test("no response while still running is not a failure; the target revision confirms it", async (t) => {
+  const { fake, make } = harness(t);
+  let previews = 0;
+  fake.preview = async () => { previews += 1; return previews <= 3 ? [entry("update", A, B)] : [entry("current", B, B)]; };
+  fake.apply = async () => { throw new Error("Request timed out"); };
+  const updater = make();
+  t.after(() => updater.stop());
+  assert.equal((await updater.apply(B)).ok, true);
+  await settle(); await settle();
+  assert.equal(updater.status().pending?.targetRevision, B, "a thrown apply must not settle the intent");
+  assert.equal(updater.status().last, null);
+  await until(() => updater.status().last !== null, "confirmation");
+  assert.equal(updater.status().last?.outcome, "updated");
+});
+
+test("while the requester is alive, the old revision keeps waiting until it expires to unknown", async (t) => {
+  const { fake, make, advance } = harness(t);
+  fake.preview = async () => [entry("update", A, B)];
+  fake.apply = async () => { throw new Error("socket closed"); };
+  const updater = make();
+  t.after(() => updater.stop());
+  await updater.apply(B);
+  let calls = 0;
+  const original = fake.preview;
+  fake.preview = async () => { calls += 1; return original(); };
+  await until(() => calls >= 3, "retries");
+  assert.equal(updater.status().pending?.targetRevision, B);
+  advance(PENDING_TIMEOUT_MS + 1);
+  assert.equal(updater.status().last?.outcome, "unknown");
+});
+
+test("startup confirmation retries when the first preview fails", async (t) => {
+  const { fake, make } = harness(t);
+  fake.preview = async () => [entry("update", A, B)];
+  fake.apply = () => new Promise(() => {});
+  const old = make();
+  await old.apply(B);
+  old.stop();
+  let previews = 0;
+  fake.preview = async () => { previews += 1; if (previews === 1) throw new Error("Plugin is not available"); return [entry("current", B, B)]; };
+  const next = make();
+  t.after(() => next.stop());
+  next.start(1);
+  await until(() => next.status().last !== null, "startup confirmation");
+  assert.equal(next.status().last?.outcome, "updated");
+  assert.ok(previews >= 2);
 });

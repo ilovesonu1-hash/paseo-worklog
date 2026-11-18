@@ -29,6 +29,8 @@ export interface UpdaterDeps {
   local(): Promise<Pick<PaseoConnection, "updates">>;
   statePath: string;
   now?: () => Date;
+  /** Delay between confirmation attempts while an intent is pending. */
+  retryMs?: number;
 }
 
 function short(message: string): string { return message.replace(/\s+/g, " ").trim().slice(0, 300); }
@@ -86,8 +88,13 @@ export class PluginUpdater {
 
   /** Called once at load. Confirms an update the previous instance requested. */
   start(delayMs = 3_000): void {
-    if (this.stopped || !this.state.pending) return;
-    this.reconcileTimer = setTimeout(() => { this.reconcileTimer = null; void this.reconcile(); }, delayMs);
+    if (!this.state.pending) return;
+    this.scheduleReconcile(delayMs, true);
+  }
+
+  private scheduleReconcile(delayMs: number, startup: boolean): void {
+    if (this.stopped || this.reconcileTimer) return;
+    this.reconcileTimer = setTimeout(() => { this.reconcileTimer = null; void this.reconcile(startup); }, delayMs);
     this.reconcileTimer.unref?.();
   }
 
@@ -107,14 +114,23 @@ export class PluginUpdater {
     } });
   }
 
-  async reconcile(): Promise<void> {
+  /**
+   * startup: this instance replaced the one that requested the update, so the
+   * old revision still installed means Paseo kept it. Otherwise (the requester
+   * is still alive and lost its response) only the target revision settles it;
+   * keep retrying until expirePending reports "unknown".
+   */
+  async reconcile(startup = true): Promise<void> {
+    this.expirePending();
     const pending = this.state.pending;
     if (!pending || this.stopped) return;
+    const retry = () => this.scheduleReconcile(this.deps.retryMs ?? 5_000, startup);
     let entry: PreviewEntry | undefined;
     try { entry = await this.preview(); }
-    catch { return; /* leave pending; expirePending turns it into "unknown" */ }
+    catch { retry(); return; }
     if (this.stopped || this.state.pending !== pending) return;
     const current = entry?.current?.currentRevision ?? null;
+    if (current !== pending.targetRevision && !startup) { retry(); return; }
     const at = this.now().toISOString();
     const last = current === pending.targetRevision
       ? { at, outcome: "updated" as const, fromRevision: pending.fromRevision, targetRevision: pending.targetRevision, message: null }
@@ -191,11 +207,12 @@ export class PluginUpdater {
             ? { at, outcome: "updated", fromRevision: pending.fromRevision, targetRevision, message: null }
             : { at, outcome: "failed", fromRevision: pending.fromRevision, targetRevision, message: short(result?.error ?? "") || "Paseo가 업데이트를 적용하지 못했습니다." } });
         })
-        .catch((cause: unknown) => {
-          // A lost response while stopping is expected; the next instance confirms.
+        .catch(() => {
+          // No response is not a failure: the daemon may still be applying
+          // (its request timeout is 5 minutes) or already reloading this
+          // process. Only an error response above records "failed".
           if (this.stopped || this.state.pending !== pending) return;
-          const at = this.now().toISOString();
-          this.write({ ...this.state, pending: null, last: { at, outcome: "failed", fromRevision: pending.fromRevision, targetRevision, message: updateError(cause).message } });
+          this.scheduleReconcile(this.deps.retryMs ?? 5_000, false);
         });
       return { ok: true, status: this.status() };
     } finally { this.applying = false; }
