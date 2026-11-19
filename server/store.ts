@@ -410,6 +410,35 @@ export class WorklogStore {
     return this.getTask(task.id)!;
   }
 
+  /**
+   * Link several sessions to one task at once (project grouping and folder
+   * auto-link). Sessions already linked anywhere are skipped, never moved.
+   * One revision bump for the whole batch; one activity line per session.
+   */
+  linkMany(taskId: string, sessions: SessionSnapshot[], actor: "user" | "system"): { task: Task; linked: number } | undefined {
+    return this.transaction(() => {
+      const current = this.getTask(taskId);
+      if (!current || current.archivedAt) return undefined;
+      const at = new Date().toISOString();
+      let linked = 0;
+      for (const raw of sessions) {
+        const session = normalizedSession(raw);
+        const key = sessionKey(session);
+        if (this.sessionOwner(key)) continue;
+        this.upsertSession(session);
+        this.db.prepare("INSERT INTO task_sessions (session_key, task_id, linked_at) VALUES (?, ?, ?)").run(key, current.id, at);
+        const label = `${session.hostLabel || session.hostId} · ${session.title}`;
+        this.record(current.id, "linked", actor === "system" ? `자동 연결: ${label}` : `세션 연결: ${label}`, actor, at);
+        linked += 1;
+      }
+      const task = linked ? this.saveTask(current, fieldsOf(current), at) : current;
+      return { task, linked };
+    });
+  }
+
+  /** Read-only lookup for the auto-link rules. */
+  taskById(id: string): Task | undefined { return this.getTask(id); }
+
   mutate(input: Mutation): MutationResult {
     const parsed = mutationSchema.safeParse(input);
     if (!parsed.success) return failure("VALIDATION", parsed.error.issues.map((issue) => issue.message).join("; "));

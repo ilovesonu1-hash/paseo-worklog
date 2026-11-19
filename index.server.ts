@@ -14,13 +14,16 @@ import { applyUpdateRpc, checkUpdateRpc, updateStatusRpc } from "./shared/update
 import { PluginUpdater } from "./server/updates.ts";
 import { ackSessionsRpc, readAcksRpc } from "./shared/acks.ts";
 import { AckStore } from "./server/acks.ts";
+import { autoLinkRulesRpc, groupProjectRpc, removeAutoLinkRpc } from "./shared/projects.ts";
+import { AutoLinkRules, groupProject } from "./server/autolink.ts";
 
 export default function contribute(server: PluginServerContext) {
   const dataDirectory = prepareDataDirectory();
   const store = new WorklogStore(join(dataDirectory, "worklog.sqlite"));
   const worker = new WorkerStore(join(dataDirectory, "worker-outbox.sqlite"));
   const transport = createPaseoTransport();
-  const runtime = new WorklogRuntime(store, worker, transport);
+  const autoLinks = new AutoLinkRules(join(dataDirectory, "autolink-rules.json"));
+  const runtime = new WorklogRuntime(store, worker, transport, () => { autoLinks.apply(store); });
   // Separate from the collection cycle: a GitHub or network failure never sets runtime.error.
   const updater = new PluginUpdater({ local: () => transport.local(), statePath: join(dataDirectory, "update-state.json") });
   const requireCentral = () => {
@@ -30,6 +33,9 @@ export default function contribute(server: PluginServerContext) {
   server.handle(readBoardRpc, () => { requireCentral(); return store.readBoard(); });
   server.handle(readAcksRpc, () => { requireCentral(); return acks.read(); });
   server.handle(ackSessionsRpc, ({ sessions }) => { requireCentral(); return acks.ack(sessions); });
+  server.handle(groupProjectRpc, (input) => { requireCentral(); const result = groupProject(store, autoLinks, input); runtime.refresh(); return result; });
+  server.handle(autoLinkRulesRpc, () => { requireCentral(); return autoLinks.list(); });
+  server.handle(removeAutoLinkRpc, ({ folder }) => { requireCentral(); return autoLinks.remove(folder); });
   server.handle(mutateRpc, (input) => {
     requireCentral();
     const result = store.mutate(input);
