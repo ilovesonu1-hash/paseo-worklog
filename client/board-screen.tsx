@@ -5,6 +5,8 @@ import { useHosts, useRpc } from "@getpaseo/plugin/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { activitiesRpc, exportRpc, mutateRpc, readBoardRpc } from "../shared/contracts";
 import { ackSessionsRpc, readAcksRpc } from "../shared/acks";
+import { autoLinkRulesRpc, groupProjectRpc, removeAutoLinkRpc } from "../shared/projects";
+import type { ProjectLane } from "../shared/focus";
 import { newRequestId, sessionKey, STATUS_LABELS, STATUS_ORDER } from "../shared/model";
 import type { BoardSnapshot, Mutation, SessionSnapshot, Task, TaskFields, TaskStatus } from "../shared/model";
 import { useSessionRoster } from "./use-session-roster";
@@ -144,6 +146,30 @@ function HostWorklogBoard(props: PluginScreenProps & { runtime: RuntimeStatus; r
   const ackSessions = useRpc(ackSessionsRpc);
   const acksKey = ["worklog", props.host.id, "acks"];
   const acksQuery = useQuery({ queryKey: acksKey, queryFn: () => readAcks({}), refetchInterval: 15_000, retry: 1 });
+  const readRules = useRpc(autoLinkRulesRpc);
+  const groupProject = useRpc(groupProjectRpc);
+  const removeRule = useRpc(removeAutoLinkRpc);
+  const rulesKey = ["worklog", props.host.id, "autolink"];
+  const rulesQuery = useQuery({ queryKey: rulesKey, queryFn: () => readRules({}), refetchInterval: 30_000, retry: 1 });
+  const [grouping, setGrouping] = useState<{ lane: ProjectLane; target: Task | null; sessions: SessionSnapshot[]; autoLink: boolean } | null>(null);
+  const [groupBusy, setGroupBusy] = useState(false);
+  const [groupError, setGroupError] = useState<string | null>(null);
+  async function runGroup() {
+    if (!grouping || groupBusy) return;
+    setGroupBusy(true); setGroupError(null);
+    try {
+      const result = await groupProject({ requestId: newRequestId(), folder: grouping.lane.project, taskId: grouping.target?.id,
+        sessions: grouping.sessions, autoLink: grouping.autoLink });
+      setGrouping(null);
+      setNotice(`세션 ${result.linked}개를 "${result.task.title}"에 연결했습니다.${result.rule ? ` 앞으로 ${result.rule.label} 폴더의 새 세션도 자동으로 연결합니다.` : ""}`);
+      void board.refetch(); void queryClient.invalidateQueries({ queryKey: rulesKey });
+    } catch (error) { setGroupError(errorMessage(error)); }
+    finally { setGroupBusy(false); }
+  }
+  async function stopAutoLink(folder: string) {
+    try { queryClient.setQueryData(rulesKey, await removeRule({ folder })); setNotice(`${folder} 폴더의 자동 연결을 껐습니다.`); }
+    catch (error) { setActionError(errorMessage(error)); }
+  }
   const acknowledged = useMemo(() => new Map((acksQuery.data?.acks ?? []).map((ack) => [sessionKey(ack), ack.activityAt])), [acksQuery.data]);
   const [acking, setAcking] = useState(false);
   async function acknowledge(sessions: SessionSnapshot[]) {
@@ -170,6 +196,7 @@ function HostWorklogBoard(props: PluginScreenProps & { runtime: RuntimeStatus; r
     onShowProject: (name: string) => { setProject(name); setSearch(""); setSection("work"); setWorkView("all"); },
     onOpenInbox: () => setSection("inbox"),
     acknowledged, acking, onAcknowledge: (sessions: SessionSnapshot[]) => { void acknowledge(sessions); },
+    onGroupProject: (lane: ProjectLane, target: Task | null, sessions: SessionSnapshot[]) => { setGroupError(null); setGrouping({ lane, target, sessions, autoLink: true }); },
   };
   const activityTaskId = editor?.task?.id;
   const activityQuery = useQuery({
@@ -475,6 +502,10 @@ function HostWorklogBoard(props: PluginScreenProps & { runtime: RuntimeStatus; r
         {editor.session ? <Banner colors={colors}>만들 때 연결할 세션: {editor.session.title || editor.session.agentId}{"\n"}{editor.session.hostLabel} · {editor.session.provider}</Banner> : null}
       </> : null}
       {editorSection === "sessions" && editor.task ? <>
+        {(rulesQuery.data?.rules ?? []).filter((rule) => rule.taskId === editor.task?.id).map((rule) => <Banner key={rule.folder} colors={colors}
+          action={<Button small variant="ghost" label="자동 연결 끄기" colors={colors} disabled={writesDisabled} onPress={() => { void stopAutoLink(rule.folder); }} />}>
+          자동 연결: {rule.label} 폴더의 새 세션을 이 작업에 연결합니다(다른 PC 포함, {dateLabel(rule.createdAt)} 이후 활동한 세션).
+        </Banner>)}
         <Body colors={colors} muted style={{ fontSize: 12 }}>한 작업에 여러 호스트의 세션을 연결할 수 있습니다. 실행 상태와 작업 상태는 별도로 기록됩니다.</Body>
         {editorDirty ? <Banner colors={colors}>수정 중인 내용을 먼저 저장한 뒤 세션을 연결하거나 해제하세요.</Banner> : null}
         {editor.task.sessions.map((saved) => {
@@ -509,6 +540,30 @@ function HostWorklogBoard(props: PluginScreenProps & { runtime: RuntimeStatus; r
       </> : null}
     </Drawer> : null}
 
+    {grouping ? <Drawer title={grouping.target ? "프로젝트 세션 연결" : "프로젝트를 작업으로 묶기"} subtitle={grouping.lane.project} colors={colors} compact={compact}
+      onClose={() => { if (!groupBusy) setGrouping(null); }}
+      footer={<View style={{ flexDirection: "row", justifyContent: "flex-end", gap: 8 }}>
+        <Button label="취소" colors={colors} variant="ghost" disabled={groupBusy} onPress={() => setGrouping(null)} />
+        <Button label={groupBusy ? "연결 중…" : grouping.target ? "연결" : "묶기"} colors={colors} variant="primary" disabled={groupBusy || writesDisabled} onPress={() => { void runGroup(); }} />
+      </View>}>
+      <Body colors={colors}>{grouping.target
+        ? `${grouping.lane.project} 폴더의 최근 세션 ${grouping.sessions.length}개를 "${grouping.target.title}" 작업에 연결합니다.`
+        : `"${grouping.lane.project}" 작업을 새로 만들고, 이 폴더의 최근 세션 ${grouping.sessions.length}개를 연결합니다.`}</Body>
+      <Pressable accessibilityRole="checkbox" accessibilityState={{ checked: grouping.autoLink }} onPress={() => setGrouping({ ...grouping, autoLink: !grouping.autoLink })}
+        style={{ flexDirection: "row", gap: 8, alignItems: "flex-start", padding: 12, borderWidth: 1, borderColor: grouping.autoLink ? colors.accent : colors.border, borderRadius: 8 }}>
+        <Text style={{ color: grouping.autoLink ? colors.accent : colors.foregroundMuted }}>{grouping.autoLink ? "☑" : "□"}</Text>
+        <View style={{ flex: 1, gap: 3 }}>
+          <Body colors={colors} style={{ fontWeight: "600" }}>앞으로 이 폴더의 새 세션도 자동 연결</Body>
+          <Body colors={colors} muted style={{ fontSize: 11 }}>폴더 이름이 {grouping.lane.project}인 세션이 새로 활동하면 수집할 때 이 작업에 붙입니다. 다른 PC도 같습니다. 작업 상세의 세션 탭에서 끌 수 있습니다.</Body>
+        </View>
+      </Pressable>
+      <View style={{ gap: 6 }}>
+        {grouping.sessions.slice(0, 8).map((session) => <Body key={sessionKey(session)} colors={colors} muted lines={1} style={{ fontSize: 12 }}>· {session.title || "제목 없는 세션"} · {session.hostLabel || session.hostId}</Body>)}
+        {grouping.sessions.length > 8 ? <Body colors={colors} muted style={{ fontSize: 11 }}>외 {grouping.sessions.length - 8}개</Body> : null}
+      </View>
+      <Body colors={colors} muted style={{ fontSize: 11 }}>3일 넘게 활동이 없는 조용한 세션과 이미 다른 작업에 연결된 세션은 넣지 않습니다.</Body>
+      {groupError ? <Banner colors={colors} danger>{groupError}</Banner> : null}
+    </Drawer> : null}
     {linkingSession ? <Drawer title="기존 작업에 연결" subtitle={linkingSession.title || "제목 없는 세션"} colors={colors} compact={compact} onClose={() => { if (!busy && !uncertain) { setLinkingSession(null); setActionError(null); } }}>
       {actionBanner}
       <Field label="연결할 작업 검색" value={linkSearch} onChange={setLinkSearch} colors={colors} placeholder="제목 또는 프로젝트" />

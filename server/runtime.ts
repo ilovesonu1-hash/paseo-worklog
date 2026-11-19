@@ -65,9 +65,11 @@ export class WorklogRuntime {
   private readonly store: WorklogStore;
   private readonly worker: WorkerStore;
   private readonly transport: PaseoTransport;
+  private readonly afterCollect?: () => void;
 
-  constructor(store: WorklogStore, worker: WorkerStore, transport: PaseoTransport) {
-    this.store = store; this.worker = worker; this.transport = transport;
+  /** afterCollect runs on the central board after each cycle's hosts are stored (folder auto-link). */
+  constructor(store: WorklogStore, worker: WorkerStore, transport: PaseoTransport, afterCollect?: () => void) {
+    this.store = store; this.worker = worker; this.transport = transport; this.afterCollect = afterCollect;
   }
 
   start(): void {
@@ -183,6 +185,10 @@ export class WorklogRuntime {
       }
     };
     const results = await Promise.allSettled(Array.from({ length: Math.min(3, targets.length) }, runner));
+    if (active() && this.afterCollect) {
+      // Never let an auto-link problem stop or fail session collection.
+      try { this.afterCollect(); } catch (cause) { console.error("[worklog] auto-link failed", cause instanceof Error ? cause.message : cause); }
+    }
     const failed = results.find((result) => result.status === "rejected");
     if (failed?.status === "rejected") throw failed.reason;
   }

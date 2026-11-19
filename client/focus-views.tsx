@@ -29,6 +29,8 @@ export interface FocusViewProps {
   acknowledged: ReadonlyMap<string, string>;
   acking: boolean;
   onAcknowledge: (sessions: SessionSnapshot[]) => void;
+  /** Group a project row: link its recent unlinked sessions to one task. */
+  onGroupProject?: (lane: ProjectLane, target: Task | null, sessions: SessionSnapshot[]) => void;
 }
 
 function reasonColor(reason: FocusReason, colors: Colors): string {
@@ -157,6 +159,9 @@ function LaneHeader({ lane, props }: { lane: ProjectLane; props: FocusViewProps 
   const { colors } = props;
   const activeSession = lane.sessions.blocked[0] ?? lane.sessions.doing[0] ?? lane.sessions.review[0];
   const latestSession = activeSession ?? lane.dormant[0];
+  // Recent unlinked sessions only; dormant (quiet) ones are left where they are.
+  const unlinked = [...lane.sessions.blocked, ...lane.sessions.doing, ...lane.sessions.review];
+  const target = lane.current ?? lane.tasks.review[0] ?? lane.tasks.blocked[0] ?? null;
   return <View style={{ gap: 6 }}>
     <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
       <Text numberOfLines={1} style={{ color: colors.foreground, fontSize: 14, fontWeight: "700", flexShrink: 1 }}>{projectLabel(lane.project)}</Text>
@@ -176,6 +181,10 @@ function LaneHeader({ lane, props }: { lane: ProjectLane; props: FocusViewProps 
       <Text style={{ color: colors.foregroundMuted, fontSize: 10, flexShrink: 1 }}>{lane.lastUpdatedAt ? `최근 활동 ${shortAge(lane.lastUpdatedAt)}` : ""}{sessionCount(lane) ? ` · 자동 배치 세션 ${sessionCount(lane)}` : ""}{lane.dormant.length ? ` · 조용한 세션 ${lane.dormant.length}(${DEFAULT_RECENT_DAYS}일 넘게 활동 없음)` : ""}</Text>
       {taskCount(lane) ? <Button small variant="ghost" label="이 프로젝트만 보기" colors={colors} onPress={() => props.onShowProject(lane.project)} /> : null}
     </View>
+    {unlinked.length && lane.project && props.onGroupProject ? <Button small colors={colors} disabled={props.writesDisabled}
+      label={target ? `"${target.title.length > 14 ? `${target.title.slice(0, 14)}…` : target.title}"에 연결 (세션 ${unlinked.length})` : `작업으로 묶기 (세션 ${unlinked.length})`}
+      accessibilityLabel={target ? `${lane.project}의 연결 안 된 세션 ${unlinked.length}개를 ${target.title}에 연결` : `${lane.project}의 연결 안 된 세션 ${unlinked.length}개를 새 작업으로 묶기`}
+      onPress={() => props.onGroupProject!(lane, target, unlinked)} /> : null}
   </View>;
 }
 
