@@ -11,14 +11,15 @@ import type { SessionSnapshot, Task, TaskStatus } from "./model.ts";
  * working-directory folder name. Placement is a view: nothing is written to
  * the board, and the session's run state never becomes a task status.
  */
-export type FocusReason = "waiting" | "review" | "blocked" | "error" | "stalled" | "noNext";
+export type FocusReason = "waiting" | "review" | "idle" | "blocked" | "error" | "stalled" | "noNext";
 
 /** Lower rank = more urgent. A task or session is listed once, under its most urgent reason. */
-export const FOCUS_ORDER: FocusReason[] = ["waiting", "review", "blocked", "error", "stalled", "noNext"];
+export const FOCUS_ORDER: FocusReason[] = ["waiting", "review", "idle", "blocked", "error", "stalled", "noNext"];
 
 export const FOCUS_LABELS: Record<FocusReason, string> = {
   waiting: "권한·답변 필요",
   review: "검토 대기",
+  idle: "지시 대기",
   blocked: "막힘",
   error: "세션 오류",
   stalled: "진행 멈춤",
@@ -28,6 +29,7 @@ export const FOCUS_LABELS: Record<FocusReason, string> = {
 export const FOCUS_HINTS: Record<FocusReason, string> = {
   waiting: "에이전트가 권한 승인이나 답변을 기다립니다.",
   review: "결과 확인을 기다립니다. 확인했으면 완료로 옮기세요.",
+  idle: "답을 마치고 다음 지시를 기다립니다. 대화를 열어 결과를 보고 다음 일을 맡기세요. 지금 맡길 일이 없으면 확인함을 누르세요.",
   blocked: "결정이나 자료가 필요합니다.",
   error: "세션이 오류 상태입니다.",
   stalled: "진행 중인데 한동안 기록이 없습니다.",
@@ -44,6 +46,8 @@ export interface FocusOptions {
   now?: number;
   stallDays?: number;
   recentDays?: number;
+  /** sessionKey → the activityAt the user acknowledged. A newer activityAt (a later turn) lists the session again. */
+  acknowledged?: ReadonlyMap<string, string>;
 }
 
 /** Board columns an unlinked session can be placed in, by run state. */
@@ -66,6 +70,21 @@ export function sessionFolder(cwd: string): string {
 
 export function sessionActivity(session: SessionSnapshot): string {
   return session.activityAt ?? session.observedAt;
+}
+
+/**
+ * A session that finished its turn and waits for the next instruction:
+ * idle, not a sub-agent, active within the recent window, and not
+ * acknowledged at this activity. activityAt is the agent's own update time;
+ * observedAt is not used because it moves on every collection.
+ */
+export function awaitsInstruction(session: SessionSnapshot, options: FocusOptions = {}): boolean {
+  if (session.execution !== "idle" || session.parentAgentId || !session.activityAt) return false;
+  const active = Date.parse(session.activityAt);
+  if (!Number.isFinite(active)) return false;
+  const now = options.now ?? Date.now();
+  if (now - active > (options.recentDays ?? DEFAULT_RECENT_DAYS) * DAY_MS) return false;
+  return options.acknowledged?.get(sessionKey(session)) !== session.activityAt;
 }
 
 function liveLinks(task: Task, live: ReadonlyMap<string, SessionSnapshot>): SessionSnapshot[] {
@@ -107,6 +126,7 @@ export function focusReasons(task: Task, live: ReadonlyMap<string, SessionSnapsh
   const reasons = new Set<FocusReason>();
   if (sessions.some((session) => session.execution === "waiting")) reasons.add("waiting");
   if (task.status === "review") reasons.add("review");
+  if (sessions.some((session) => awaitsInstruction(session, options))) reasons.add("idle");
   if (task.status === "blocked") reasons.add("blocked");
   if (sessions.some((session) => session.execution === "error")) reasons.add("error");
   if (task.status === "doing") {
@@ -142,12 +162,15 @@ export function buildFocusQueue(tasks: readonly Task[], live: ReadonlyMap<string
     if (!reasons.length) continue;
     const reason = reasons[0];
     const linked = liveLinks(task, live);
-    const sessions = reason === "waiting" || reason === "error"
-      ? linked.filter((session) => session.execution === reason) : linked;
-    items.push({ task, reason, reasons, sessions, project: task.project, at: task.updatedAt });
+    const sessions = reason === "waiting" || reason === "error" ? linked.filter((session) => session.execution === reason)
+      : reason === "idle" ? linked.filter((session) => awaitsInstruction(session, options)) : linked;
+    // 지시 대기 is about the session: show and order by when it finished, not when the task was edited.
+    const at = reason === "idle" && sessions.length ? sessions.map(sessionActivity).sort()[0] : task.updatedAt;
+    items.push({ task, reason, reasons, sessions, project: task.project, at });
   }
   for (const auto of placeUnlinkedSessions(tasks, live, options)) {
-    const reason = auto.session.execution === "waiting" ? "waiting" : auto.session.execution === "error" ? "error" : null;
+    const reason = auto.session.execution === "waiting" ? "waiting" : auto.session.execution === "error" ? "error"
+      : awaitsInstruction(auto.session, options) ? "idle" : null;
     if (reason) items.push({ task: null, reason, reasons: [reason], sessions: [auto.session], project: auto.project, at: sessionActivity(auto.session) });
   }
   const priority = (item: FocusItem) => item.task ? PRIORITY_RANK[item.task.priority] : PRIORITY_RANK.normal;
@@ -219,7 +242,7 @@ export function buildProjectLanes(tasks: readonly Task[], live: ReadonlyMap<stri
       project, tasks: byStatus, sessions, dormant,
       current: pickCurrent(byStatus.doing) ?? pickCurrent(byStatus.todo),
       attention: entry.tasks.filter((task) => focusReasons(task, live, options).length > 0).length
-        + sessions.blocked.length,
+        + sessions.blocked.length + sessions.review.filter((session) => awaitsInstruction(session, options)).length,
       live: counts,
       lastUpdatedAt,
     });

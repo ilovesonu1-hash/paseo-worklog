@@ -32,3 +32,8 @@ test("a local daemon that has not published its host ID is not reported as an id
   const mismatch = new PaseoTransportError("SERVER_ID_MISMATCH", "연결한 Paseo 호스트의 실제 ID가 요청한 호스트와 다릅니다.");
   assert.match(safeSyncError(mismatch), /ID가 등록된 대상과 다릅니다/);
 });
+
+test("the transport suffix is not shown to people", () => {
+  assert.equal(safeSyncError(remote("WORKLOG_ROLE: 이 호스트는 중앙 역할이라 수집·보고 교환 요청을 받지 않습니다.")),
+    "이 호스트는 중앙 역할이라 수집·보고 교환 요청을 받지 않습니다.");
+});

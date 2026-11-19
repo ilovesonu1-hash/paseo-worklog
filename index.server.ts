@@ -12,6 +12,8 @@ import { WorklogRuntime } from "./server/runtime.ts";
 import { configureRuntimeRpc, dismissDeliveryRpc, exchangeRpc, readRosterRpc, refreshRuntimeRpc, runtimeStatusRpc } from "./shared/sync.ts";
 import { applyUpdateRpc, checkUpdateRpc, updateStatusRpc } from "./shared/updates.ts";
 import { PluginUpdater } from "./server/updates.ts";
+import { ackSessionsRpc, readAcksRpc } from "./shared/acks.ts";
+import { AckStore } from "./server/acks.ts";
 
 export default function contribute(server: PluginServerContext) {
   const dataDirectory = prepareDataDirectory();
@@ -24,7 +26,10 @@ export default function contribute(server: PluginServerContext) {
   const requireCentral = () => {
     if (worker.readConfig().config.role !== "central") throw new Error("이 호스트는 수집·보고 역할입니다. 작업 편집은 중앙 보드에서 하세요.");
   };
+  const acks = new AckStore(join(dataDirectory, "focus-acks.json"));
   server.handle(readBoardRpc, () => { requireCentral(); return store.readBoard(); });
+  server.handle(readAcksRpc, () => { requireCentral(); return acks.read(); });
+  server.handle(ackSessionsRpc, ({ sessions }) => { requireCentral(); return acks.ack(sessions); });
   server.handle(mutateRpc, (input) => {
     requireCentral();
     const result = store.mutate(input);

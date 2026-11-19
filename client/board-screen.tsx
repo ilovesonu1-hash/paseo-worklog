@@ -4,6 +4,7 @@ import type { PluginScreenProps } from "@getpaseo/plugin/client";
 import { useHosts, useRpc } from "@getpaseo/plugin/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { activitiesRpc, exportRpc, mutateRpc, readBoardRpc } from "../shared/contracts";
+import { ackSessionsRpc, readAcksRpc } from "../shared/acks";
 import { newRequestId, sessionKey, STATUS_LABELS, STATUS_ORDER } from "../shared/model";
 import type { BoardSnapshot, Mutation, SessionSnapshot, Task, TaskFields, TaskStatus } from "../shared/model";
 import { useSessionRoster } from "./use-session-roster";
@@ -122,7 +123,8 @@ function HostWorklogBoard(props: PluginScreenProps & { runtime: RuntimeStatus; r
   const activeTasks = tasks.filter((task) => !task.archivedAt);
   const archived = tasks.filter((task) => !!task.archivedAt);
   const taskTitles = useMemo(() => new Map(tasks.map((task) => [task.id, task.title])), [tasks]);
-  const onlineHosts = useMemo(() => new Set(roster.hosts.filter((host) => host.status === "online" && !host.error).map((host) => host.hostId)), [roster.hosts]);
+  // "online" means this cycle's session list was read. A report-link error (host.error) does not make the sessions stale.
+  const onlineHosts = useMemo(() => new Set(roster.hosts.filter((host) => host.status === "online").map((host) => host.hostId)), [roster.hosts]);
   const liveSessions = useMemo(() => new Map(roster.sessions.filter((session) => onlineHosts.has(session.hostId)).map((session) => [sessionKey(session), session])), [roster.sessions, onlineHosts]);
   const linkedKeys = new Set(tasks.flatMap((task) => task.sessions.map(sessionKey)));
   const inbox = roster.sessions.filter((session) => !session.parentAgentId && !linkedKeys.has(sessionKey(session)));
@@ -138,7 +140,23 @@ function HostWorklogBoard(props: PluginScreenProps & { runtime: RuntimeStatus; r
   const writesDisabled = busy || uncertain || board.isError || !board.data || !!props.runtimeError;
   // All tasks, archived included: archived tasks keep their session links, so
   // those sessions must not be auto-placed. The views skip archived tasks themselves.
-  const focusCount = buildFocusQueue(tasks, liveSessions).length;
+  const readAcks = useRpc(readAcksRpc);
+  const ackSessions = useRpc(ackSessionsRpc);
+  const acksKey = ["worklog", props.host.id, "acks"];
+  const acksQuery = useQuery({ queryKey: acksKey, queryFn: () => readAcks({}), refetchInterval: 15_000, retry: 1 });
+  const acknowledged = useMemo(() => new Map((acksQuery.data?.acks ?? []).map((ack) => [sessionKey(ack), ack.activityAt])), [acksQuery.data]);
+  const [acking, setAcking] = useState(false);
+  async function acknowledge(sessions: SessionSnapshot[]) {
+    const entries = sessions.filter((session) => !!session.activityAt)
+      .map((session) => ({ hostId: session.hostId, agentId: session.agentId, activityAt: session.activityAt! }));
+    if (!entries.length || acking) return;
+    setAcking(true); setActionError(null);
+    try {
+      for (let index = 0; index < entries.length; index += 500) queryClient.setQueryData(acksKey, await ackSessions({ sessions: entries.slice(index, index + 500) }));
+    } catch (error) { setActionError(`확인 표시를 저장하지 못했습니다. ${errorMessage(error)}`); }
+    finally { setAcking(false); }
+  }
+  const focusCount = buildFocusQueue(tasks, liveSessions, { acknowledged }).length;
   // One line for the 새 세션 tab; the per-PC list lives in the connection panel.
   const collectedHosts = roster.hosts.filter((host) => host.status !== "disabled");
   const hostProblems = collectedHosts.filter((host) => host.status === "offline" || host.status === "error" || host.status === "stale").length;
@@ -151,6 +169,7 @@ function HostWorklogBoard(props: PluginScreenProps & { runtime: RuntimeStatus; r
     onRegisterSession: (session: SessionSnapshot) => newTask("todo", session),
     onShowProject: (name: string) => { setProject(name); setSearch(""); setSection("work"); setWorkView("all"); },
     onOpenInbox: () => setSection("inbox"),
+    acknowledged, acking, onAcknowledge: (sessions: SessionSnapshot[]) => { void acknowledge(sessions); },
   };
   const activityTaskId = editor?.task?.id;
   const activityQuery = useQuery({
