@@ -25,10 +25,15 @@ export interface FocusViewProps {
   openSession: (session: SessionSnapshot) => void;
   hasNavigation: boolean;
   writesDisabled: boolean;
+  /** sessionKey → acknowledged activityAt, from the central board. */
+  acknowledged: ReadonlyMap<string, string>;
+  acking: boolean;
+  onAcknowledge: (sessions: SessionSnapshot[]) => void;
 }
 
 function reasonColor(reason: FocusReason, colors: Colors): string {
-  return reason === "waiting" || reason === "review" || reason === "stalled" ? colors.statusWarning
+  return reason === "idle" ? colors.accent
+    : reason === "waiting" || reason === "review" || reason === "stalled" ? colors.statusWarning
     : reason === "blocked" || reason === "error" ? colors.statusDanger : colors.foregroundMuted;
 }
 
@@ -51,6 +56,11 @@ function SessionActions({ session, props }: { session: SessionSnapshot; props: F
       disabled={!props.canOpenSession(session)} onPress={() => props.openSession(session)} /> : null}
     <Button small variant="ghost" colors={colors} label="작업으로 등록" disabled={props.writesDisabled} onPress={() => props.onRegisterSession(session)} />
   </>;
+}
+
+function AckButton({ sessions, props, label = "확인함" }: { sessions: SessionSnapshot[]; props: FocusViewProps; label?: string }) {
+  return <Button small variant="ghost" colors={props.colors} label={props.acking ? "저장 중…" : label} disabled={props.acking || !sessions.length}
+    accessibilityLabel={`${label}: 다음 응답이 올 때까지 지시 대기에서 뺍니다`} onPress={() => props.onAcknowledge(sessions)} />;
 }
 
 function FocusRow({ item, props }: { item: FocusItem; props: FocusViewProps }) {
@@ -81,6 +91,7 @@ function FocusRow({ item, props }: { item: FocusItem; props: FocusViewProps }) {
           label={props.canOpenSession(session) ? "대화 열기" : "앱에 호스트 연결 필요"}
           disabled={!props.canOpenSession(session)} onPress={() => props.openSession(session)} /> : null}
       </> : <SessionActions session={session} props={props} />}
+      {item.reason === "idle" ? <AckButton sessions={item.sessions} props={props} /> : null}
     </View>
   </View>;
 }
@@ -88,7 +99,7 @@ function FocusRow({ item, props }: { item: FocusItem; props: FocusViewProps }) {
 /** (나) Everything across projects that is waiting on the user, most urgent first. */
 export function FocusQueueView(props: FocusViewProps) {
   const { colors, compact } = props;
-  const queue = useMemo(() => buildFocusQueue(props.tasks, props.liveSessions), [props.tasks, props.liveSessions]);
+  const queue = useMemo(() => buildFocusQueue(props.tasks, props.liveSessions, { acknowledged: props.acknowledged }), [props.tasks, props.liveSessions, props.acknowledged]);
   const doing = props.tasks.filter((task) => !task.archivedAt && task.status === "doing").length;
   const working = [...props.liveSessions.values()].filter((session) => session.execution === "working").length;
   return <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: compact ? 16 : 24, gap: 14, maxWidth: 900, width: "100%", flexGrow: 1 }}>
@@ -105,9 +116,10 @@ export function FocusQueueView(props: FocusViewProps) {
       const group = queue.filter((item) => item.reason === reason);
       if (!group.length) return null;
       return <View key={reason} style={{ gap: 9 }}>
-        <View style={{ flexDirection: "row", alignItems: "baseline", gap: 8, marginTop: 6 }}>
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 8, marginTop: 6 }}>
           <Text style={{ color: reasonColor(reason, colors), fontSize: 13, fontWeight: "700" }}>{FOCUS_LABELS[reason]}</Text>
           <Text style={{ color: colors.foregroundMuted, fontSize: 11 }}>{group.length}</Text>
+          {reason === "idle" && group.length > 1 ? <><View style={{ flex: 1 }} /><AckButton sessions={group.flatMap((item) => item.sessions)} props={props} label="모두 확인함" /></> : null}
         </View>
         <Body colors={colors} muted style={{ fontSize: 11 }}>{reason === "stalled" ? `진행 중인데 ${DEFAULT_STALL_DAYS}일 넘게 기록이 없고, 실행 중인 세션도 없습니다.` : FOCUS_HINTS[reason]}</Body>
         {group.map((item) => <FocusRow key={focusItemKey(item)} item={item} props={props} />)}
@@ -201,7 +213,7 @@ const AUTO_COLUMN_FOR_STATUS: Partial<Record<TaskStatus, AutoColumn>> = { doing:
 /** (가) One row per project; columns follow the task status flow. */
 export function ProjectFlowView(props: FocusViewProps & { viewportWidth: number }) {
   const { colors, compact } = props;
-  const lanes = useMemo(() => buildProjectLanes(props.tasks, props.liveSessions), [props.tasks, props.liveSessions]);
+  const lanes = useMemo(() => buildProjectLanes(props.tasks, props.liveSessions, { acknowledged: props.acknowledged }), [props.tasks, props.liveSessions, props.acknowledged]);
   if (!lanes.length) return <Empty colors={colors} title="아직 프로젝트가 없습니다" subtitle="세션이 수집되거나 작업에 프로젝트 이름을 적으면 프로젝트마다 한 줄씩 여기에 나타납니다." />;
   const header = <View style={{ gap: 4, paddingBottom: 6 }}>
     <Body colors={colors} muted style={{ fontSize: 12 }}>프로젝트마다 지금 하는 일과 단계별 작업을 한 줄로 봅니다. 작업에 연결하지 않은 세션은 폴더 이름으로 자동 배치됩니다(점선 카드). "실행 중"은 "진행 중", "응답 완료"는 "검토", "권한·답변 필요"와 "오류"는 "막힘" 열에 놓입니다. {DEFAULT_RECENT_DAYS}일 넘게 활동이 없는 응답 완료 세션은 카드 대신 "조용한 세션" 개수로만 표시합니다.</Body>

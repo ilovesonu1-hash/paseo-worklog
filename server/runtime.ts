@@ -21,7 +21,8 @@ function errorText(error: unknown): string {
 export function safeSyncError(error: unknown): string {
   const message = errorText(error);
   const known = message.match(/WORKLOG_[A-Z_]+:\s*([^\n]+)/);
-  if (known) return known[1].trim().slice(0, 500);
+  // The native client appends " requestType=… code=…" to remote handler errors; that is not for people.
+  if (known) return known[1].replace(/\s+requestType=\S+.*$/, "").trim().slice(0, 500);
   // Before the identity check: "…호스트 ID를 게시하지 않았습니다" is a local readiness error, not a mismatch.
   if (/LOCAL_|로컬 Paseo|자격 증명/.test(message)) return "이 Paseo 인스턴스의 실행 정보나 로컬 연결 자격 증명을 아직 읽을 수 없습니다.";
   if (/SERVER_ID_MISMATCH|호스트.*ID.*다|identity|identity_mismatch/i.test(message)) return "연결된 호스트의 ID가 등록된 대상과 다릅니다. Paseo 호스트 등록을 확인하세요.";

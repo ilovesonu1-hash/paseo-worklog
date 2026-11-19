@@ -145,7 +145,7 @@ test("a project whose only sessions are dormant still gets a lane, with no cards
   assert.deepEqual(buildFocusQueue([], live(at("old-1", "idle", "/p/Diagnostic_Exam", 24 * 6)), options), []);
 });
 
-test("waiting and error unlinked sessions join the focus queue; working and idle ones do not", () => {
+test("unlinked sessions that wait (permission, answer, next instruction) or failed join the focus queue; working ones do not", () => {
   const queue = buildFocusQueue([task({ id: "review", status: "review", updatedAt: hoursAgo(1) })], live(
     at("ask", "waiting", "/p/imaging", 5),
     at("bad", "error", "/p/imaging", 1),
@@ -153,7 +153,7 @@ test("waiting and error unlinked sessions join the focus queue; working and idle
     at("done", "idle", "/p/imaging"),
   ), options);
   assert.deepEqual(queue.map((item) => [item.reason, item.task?.id ?? item.sessions[0].agentId, item.project]), [
-    ["waiting", "ask", "imaging"], ["review", "review", "alpha"], ["error", "bad", "imaging"],
+    ["waiting", "ask", "imaging"], ["review", "review", "alpha"], ["idle", "done", "imaging"], ["error", "bad", "imaging"],
   ]);
 });
 
@@ -167,7 +167,41 @@ test("a project with only unlinked sessions still gets a lane with attention and
   assert.deepEqual(imaging.sessions.blocked.map((entry) => entry.agentId), ["ask"]);
   assert.deepEqual(imaging.sessions.doing.map((entry) => entry.agentId), ["run"]);
   assert.deepEqual(imaging.sessions.review.map((entry) => entry.agentId), ["done"]);
-  assert.equal(imaging.attention, 1);
+  assert.equal(imaging.attention, 2, "the waiting session and the one waiting for the next instruction");
   assert.deepEqual(imaging.live, { working: 1, waiting: 1, error: 0 });
   assert.equal(imaging.current, null);
+});
+
+test("a session waiting for the next instruction lists its task once; done and archived tasks stay out", () => {
+  const idle = at("idle-1", "idle", "/p/a", 2);
+  const busy = at("busy-1", "working", "/p/a");
+  const doing = task({ id: "doing", sessions: [idle, busy] });
+  const finished = task({ id: "finished", status: "done", sessions: [at("idle-2", "idle", "/p/a", 1)] });
+  const archived = task({ id: "archived", archivedAt: hoursAgo(1), sessions: [at("idle-3", "idle", "/p/a", 1)] });
+  const queue = buildFocusQueue([doing, finished, archived], live(idle, busy, finished.sessions[0], archived.sessions[0]), options);
+  assert.deepEqual(queue.map((item) => [item.reason, item.task?.id, item.sessions.map((entry) => entry.agentId)]), [["idle", "doing", ["idle-1"]]],
+    "only the idle session is offered to open, and finished work is not asked about");
+  assert.equal(queue[0].at, idle.activityAt, "shown and ordered by when the session finished, not when the task was edited");
+});
+
+test("a review task keeps 검토 대기 first and also notes 지시 대기", () => {
+  const idle = at("idle-r", "idle", "/p/a", 1);
+  assert.deepEqual(focusReasons(task({ status: "review", sessions: [idle] }), live(idle), options), ["review", "idle"]);
+});
+
+test("acknowledging hides a session until its next turn; old, child and undated idle sessions never list", () => {
+  const idle = at("idle-a", "idle", "/p/a", 2);
+  const acknowledged = new Map([[sessionKey(idle), idle.activityAt!]]);
+  assert.deepEqual(buildFocusQueue([], live(idle), { ...options, acknowledged }), []);
+  const nextTurn = { ...idle, activityAt: hoursAgo(1) };
+  assert.equal(buildFocusQueue([], live(nextTurn), { ...options, acknowledged })[0]?.reason, "idle", "a newer turn lists it again");
+  const linked = task({ sessions: [idle] });
+  assert.deepEqual(focusReasons(linked, live(idle), { ...options, acknowledged }), []);
+  assert.deepEqual(buildFocusQueue([], live(
+    at("old", "idle", "/p/a", 24 * 4),
+    at("child", "idle", "/p/a", 1, { parentAgentId: "idle-a" }),
+    at("undated", "idle", "/p/a", 0, { activityAt: undefined }),
+  ), options), []);
+  const lanes = buildProjectLanes([], live(idle), { ...options, acknowledged });
+  assert.equal(lanes[0].attention, 0, "the lane count follows the same acknowledgement");
 });
