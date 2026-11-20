@@ -1,5 +1,5 @@
 import React from "react";
-import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import { Platform, Pressable, ScrollView, Text, TextInput, View } from "react-native";
 import type { TextStyle, ViewStyle } from "react-native";
 import type { PluginScreenProps } from "@getpaseo/plugin/client";
 import { STATUS_LABELS, STATUS_ORDER } from "../shared/model";
@@ -148,10 +148,18 @@ export function Timeline({ items, colors, titles }: { items: Activity[]; colors:
   </View>;
 }
 
+/**
+ * Phones draw plugin screens edge to edge and the plugin API gives no inset
+ * values, so clear the system navigation bar (Android 3-button bar, iOS home
+ * indicator) ourselves on compact layouts.
+ */
+export const BOTTOM_CLEARANCE = Platform.OS === "android" ? 48 : Platform.OS === "ios" ? 34 : 0;
+
 export function Drawer({ title, subtitle, colors, compact, onClose, children, footer, width = 510 }: {
   title: string; subtitle?: string; colors: Colors; compact: boolean; onClose: () => void;
   children: React.ReactNode; footer?: React.ReactNode; width?: number;
 }) {
+  const bottom = compact ? BOTTOM_CLEARANCE : 0;
   return <View style={{ position: "absolute", top: 0, bottom: 0, left: 0, right: 0, zIndex: 20, flexDirection: "row", justifyContent: "flex-end" }}>
     <Pressable accessibilityRole="button" accessibilityLabel="패널 닫기" onPress={onClose} style={{ position: "absolute", top: 0, bottom: 0, left: 0, right: 0, backgroundColor: "rgba(0,0,0,0.32)" }} />
     <View style={{ width: compact ? "100%" : width, maxWidth: "100%", backgroundColor: colors.surface1, borderLeftWidth: 1, borderColor: colors.border, flexDirection: "column" }}>
@@ -160,8 +168,8 @@ export function Drawer({ title, subtitle, colors, compact, onClose, children, fo
           {subtitle ? <Body colors={colors} muted style={{ fontSize: 11 }}>{subtitle}</Body> : null}</View>
         <Button label="닫기" colors={colors} variant="ghost" small onPress={onClose} />
       </View>
-      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 20, gap: 18 }} keyboardShouldPersistTaps="handled">{children}</ScrollView>
-      {footer ? <View style={{ padding: 16, gap: 10, borderTopWidth: 1, borderColor: colors.border, backgroundColor: colors.surface1 }}>{footer}</View> : null}
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 20, gap: 18, paddingBottom: 20 + (footer ? 0 : bottom) }} keyboardShouldPersistTaps="handled">{children}</ScrollView>
+      {footer ? <View style={{ padding: 16, paddingBottom: 16 + bottom, gap: 10, borderTopWidth: 1, borderColor: colors.border, backgroundColor: colors.surface1 }}>{footer}</View> : null}
     </View>
   </View>;
 }

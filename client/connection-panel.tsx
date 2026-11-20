@@ -5,7 +5,7 @@ import { useRpc } from "@getpaseo/plugin/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { configureRuntimeRpc, dismissDeliveryRpc, refreshRuntimeRpc, runtimeStatusRpc } from "../shared/sync";
 import type { ConfigSnapshot, RuntimeStatus, SyncConfig } from "../shared/sync";
-import { Banner, Body, Button, Chip, Drawer, Empty, Field, HostHealthList } from "./components";
+import { Banner, Body, BOTTOM_CLEARANCE, Button, Chip, Drawer, Empty, Field, HostHealthList } from "./components";
 import type { Colors } from "./components";
 import { dateLabel, errorMessage, shortAge } from "./presentation";
 import { UpdateSection } from "./update-section";
@@ -207,7 +207,7 @@ export function SatelliteScreen({ props, runtime, runtimeError, onOpenConnection
       </View>
       <Body colors={colors} muted style={{ fontSize: 12 }}>이 PC의 에이전트 보고를 보관합니다. 중앙 PC가 보고를 가져가 작업 기록에 반영합니다.</Body>
     </View>
-    <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: props.layout.compact ? 16 : 24, gap: 18, maxWidth: 960, width: "100%" }}>
+    <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: props.layout.compact ? 16 : 24, paddingBottom: props.layout.compact ? 16 + BOTTOM_CLEARANCE : 24, gap: 18, maxWidth: 960, width: "100%" }}>
       {runtimeError || runtime.error ? <Banner colors={colors} danger>{runtimeError || runtime.error}</Banner> : null}
       {error ? <Banner colors={colors} danger>{error}</Banner> : null}
       <Banner colors={colors} action={<Button label="상태 새로고침" small colors={colors} onPress={onRefresh} />}>

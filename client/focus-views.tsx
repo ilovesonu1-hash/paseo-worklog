@@ -7,7 +7,7 @@ import {
   focusItemKey, sessionActivity,
 } from "../shared/focus";
 import type { AutoColumn, FocusItem, FocusReason, ProjectLane } from "../shared/focus";
-import { Body, Button, Empty, SessionState, statusColor } from "./components";
+import { Body, BOTTOM_CLEARANCE, Button, Empty, SessionState, statusColor } from "./components";
 import type { Colors } from "./components";
 import { shortAge } from "./presentation";
 
@@ -104,7 +104,7 @@ export function FocusQueueView(props: FocusViewProps) {
   const queue = useMemo(() => buildFocusQueue(props.tasks, props.liveSessions, { acknowledged: props.acknowledged }), [props.tasks, props.liveSessions, props.acknowledged]);
   const doing = props.tasks.filter((task) => !task.archivedAt && task.status === "doing").length;
   const working = [...props.liveSessions.values()].filter((session) => session.execution === "working").length;
-  return <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: compact ? 16 : 24, gap: 14, maxWidth: 900, width: "100%", flexGrow: 1 }}>
+  return <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: compact ? 16 : 24, paddingBottom: compact ? 16 + BOTTOM_CLEARANCE : 24, gap: 14, maxWidth: 900, width: "100%", flexGrow: 1 }}>
     <View style={{ gap: 4 }}>
       <Text style={{ color: colors.foreground, fontSize: 17, fontWeight: "700" }}>확인 필요 {queue.length}</Text>
       <Body colors={colors} muted style={{ fontSize: 12 }}>모든 프로젝트에서 내 손이 필요한 작업과 세션을 모았습니다. 진행 중인 작업 {doing}개 · 실행 중인 세션 {working}개.</Body>
@@ -228,7 +228,7 @@ export function ProjectFlowView(props: FocusViewProps & { viewportWidth: number 
     <Body colors={colors} muted style={{ fontSize: 12 }}>프로젝트마다 지금 하는 일과 단계별 작업을 한 줄로 봅니다. 작업에 연결하지 않은 세션은 폴더 이름으로 자동 배치됩니다(점선 카드). "실행 중"은 "진행 중", "응답 완료"는 "검토", "권한·답변 필요"와 "오류"는 "막힘" 열에 놓입니다. {DEFAULT_RECENT_DAYS}일 넘게 활동이 없는 응답 완료 세션은 카드 대신 "조용한 세션" 개수로만 표시합니다.</Body>
   </View>;
 
-  if (compact) return <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 16, gap: 12 }}>
+  if (compact) return <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 16, paddingBottom: 16 + BOTTOM_CLEARANCE, gap: 12 }}>
     {header}
     {lanes.map((lane) => <View key={lane.project || "(none)"} style={{ borderWidth: 1, borderColor: colors.border, borderRadius: 10, backgroundColor: colors.surface1, padding: 13, gap: 10 }}>
       <LaneHeader lane={lane} props={props} />
