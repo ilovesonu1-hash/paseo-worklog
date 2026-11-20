@@ -13,7 +13,7 @@ import { useSessionRoster } from "./use-session-roster";
 import { runtimeStatusRpc } from "../shared/sync";
 import type { RuntimeStatus } from "../shared/sync";
 import { ConnectionPanel, SatelliteScreen } from "./connection-panel";
-import { Banner, Body, Button, Chip, Drawer, Empty, Field, SessionState, StatusPicker, statusColor, Timeline } from "./components";
+import { Banner, Body, BOTTOM_CLEARANCE, Button, Chip, Drawer, Empty, Field, SessionState, StatusPicker, statusColor, Timeline } from "./components";
 import type { Colors } from "./components";
 import { changedFields, dateLabel, EMPTY_FIELDS, errorMessage, fieldsOf, sessionProject, shortAge, STATUS_HINT } from "./presentation";
 import { FocusQueueView, ProjectFlowView } from "./focus-views";
@@ -330,7 +330,7 @@ function HostWorklogBoard(props: PluginScreenProps & { runtime: RuntimeStatus; r
       <View style={{ flexDirection: "row", justifyContent: "space-between", gap: 12, alignItems: "center" }}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 5, alignItems: "center" }} style={{ flexGrow: 0, flexShrink: 1 }}>
           {([
-            ["focus", "확인 필요", focusCount], ["work", "작업", activeTasks.length],
+            ["focus", "확인 필요", focusCount], ["work", "작업", inbox.length ? `${activeTasks.length} · 세션 ${inbox.length}` : activeTasks.length],
             ["inbox", "새 세션", inbox.length], ["history", "기록", null],
           ] as const).map(([key, label, count]) => <Pressable key={key} accessibilityRole="tab" accessibilityLabel={label} accessibilityState={{ selected: section === key }}
             onPress={() => setSection(key)} style={{ flexDirection: "row", gap: 7, alignItems: "center", paddingHorizontal: 11, paddingVertical: 8,
@@ -380,7 +380,7 @@ function HostWorklogBoard(props: PluginScreenProps & { runtime: RuntimeStatus; r
           tone={compactStatus === status ? statusColor(status, colors) : undefined} selected={compactStatus === status} onPress={() => setCompactStatus(status)} />)}
       </ScrollView> : null}
       <ScrollView horizontal={!compact} showsHorizontalScrollIndicator={!compact} style={{ flex: 1 }}
-        contentContainerStyle={compact ? { paddingHorizontal: 16, paddingBottom: 20 } : { paddingHorizontal: 24, paddingBottom: 20, gap: 12, flexGrow: 1 }}>
+        contentContainerStyle={compact ? { paddingHorizontal: 16, paddingBottom: 20 + BOTTOM_CLEARANCE } : { paddingHorizontal: 24, paddingBottom: 20, gap: 12, flexGrow: 1 }}>
         {(compact ? [compactStatus] : STATUS_ORDER).map((status) => {
           const columnTasks = visibleTasks.filter((task) => task.status === status);
           return <View key={status} style={{ width: compact ? "100%" : Math.max(226, (viewportWidth - 96) / 5),
@@ -408,7 +408,7 @@ function HostWorklogBoard(props: PluginScreenProps & { runtime: RuntimeStatus; r
       {!activeTasks.length ? <View style={{ paddingHorizontal: 24, paddingBottom: 14 }}><Body colors={colors} muted style={{ fontSize: 11 }}>새 작업을 직접 적거나, "새 세션"에서 진행 중인 세션을 작업에 연결하세요.</Body></View> : null}
     </View> : null}
 
-    {section === "inbox" ? <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: compact ? 16 : 24, gap: 18, flexGrow: 1 }}>
+    {section === "inbox" ? <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: compact ? 16 : 24, paddingBottom: compact ? 16 + BOTTOM_CLEARANCE : 24, gap: 18, flexGrow: 1 }}>
       <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
         <View style={{ flex: 1, gap: 4 }}><Text style={{ color: colors.foreground, fontSize: 17, fontWeight: "700" }}>새 세션 {inbox.length}</Text>
           <Body colors={colors} muted style={{ fontSize: 12 }}>아직 어느 작업에도 연결하지 않은 세션입니다. 남길 세션만 작업으로 등록하거나 기존 작업에 연결하세요.</Body></View>
@@ -436,7 +436,7 @@ function HostWorklogBoard(props: PluginScreenProps & { runtime: RuntimeStatus; r
       <Body colors={colors} muted style={{ fontSize: 11 }}>실행 상태는 대화의 현재 상태입니다. 세션이 멈추거나 끝나도 작업을 자동으로 완료하지 않습니다.</Body>
     </ScrollView> : null}
 
-    {section === "history" && board.data ? <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: compact ? 16 : 24, gap: 20, maxWidth: 850, width: "100%" }}>
+    {section === "history" && board.data ? <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: compact ? 16 : 24, paddingBottom: compact ? 16 + BOTTOM_CLEARANCE : 24, gap: 20, maxWidth: 850, width: "100%" }}>
       <View style={{ gap: 4 }}><Text style={{ color: colors.foreground, fontSize: 17, fontWeight: "700" }}>최근 활동</Text><Body colors={colors} muted style={{ fontSize: 12 }}>수정, 상태 변경, 보고와 메모를 시간순으로 남깁니다.</Body></View>
       {activityQuery.isError ? <Banner colors={colors} danger>{errorMessage(activityQuery.error)}</Banner> : null}
       <Timeline items={activityQuery.data?.activities ?? board.data.activities} colors={colors} titles={taskTitles} />
@@ -444,7 +444,7 @@ function HostWorklogBoard(props: PluginScreenProps & { runtime: RuntimeStatus; r
       {activityQuery.data?.hasMore ? <Body colors={colors} muted style={{ fontSize: 11 }}>최근 100개 기록을 표시합니다. 전체 기록은 JSON 내보내기로 보관할 수 있습니다.</Body> : null}
     </ScrollView> : null}
 
-    {section === "work" && workView === "archive" && board.data ? <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: compact ? 16 : 24, paddingBottom: 24, gap: 10, flexGrow: 1 }}>
+    {section === "work" && workView === "archive" && board.data ? <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: compact ? 16 : 24, paddingBottom: 24 + (compact ? BOTTOM_CLEARANCE : 0), gap: 10, flexGrow: 1 }}>
       <Body colors={colors} muted style={{ fontSize: 12, marginBottom: 5 }}>보관한 작업은 기록과 연결을 유지합니다. 복원하면 작업 목록으로 돌아옵니다.</Body>
       {archived.filter(matches).map((task) => <View key={task.id} style={{ flexDirection: "row", alignItems: "center", gap: 12, padding: 16, borderWidth: 1, borderColor: colors.border, borderRadius: 10, backgroundColor: colors.surface1 }}>
         <Pressable onPress={() => openTask(task)} accessibilityRole="button" style={{ flex: 1, gap: 5 }}>
