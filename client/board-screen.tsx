@@ -330,7 +330,7 @@ function HostWorklogBoard(props: PluginScreenProps & { runtime: RuntimeStatus; r
       <View style={{ flexDirection: "row", justifyContent: "space-between", gap: 12, alignItems: "center" }}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 5, alignItems: "center" }} style={{ flexGrow: 0, flexShrink: 1 }}>
           {([
-            ["focus", "확인 필요", focusCount], ["work", "작업", activeTasks.length],
+            ["focus", "확인 필요", focusCount], ["work", "작업", inbox.length ? `${activeTasks.length} · 세션 ${inbox.length}` : activeTasks.length],
             ["inbox", "새 세션", inbox.length], ["history", "기록", null],
           ] as const).map(([key, label, count]) => <Pressable key={key} accessibilityRole="tab" accessibilityLabel={label} accessibilityState={{ selected: section === key }}
             onPress={() => setSection(key)} style={{ flexDirection: "row", gap: 7, alignItems: "center", paddingHorizontal: 11, paddingVertical: 8,

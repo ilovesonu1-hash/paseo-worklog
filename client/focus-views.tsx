@@ -213,7 +213,7 @@ function SessionMiniCard({ session, props }: { session: SessionSnapshot; props: 
     style={({ pressed }) => ({ borderWidth: 1, borderStyle: "dashed", borderColor: tone, borderRadius: 7, paddingHorizontal: 8, paddingVertical: 6, gap: 3,
       backgroundColor: pressed ? colors.surface2 : colors.surface0 })}>
     <Text numberOfLines={2} style={{ color: colors.foreground, fontSize: 11, lineHeight: 16 }}>{session.title}</Text>
-    <Text numberOfLines={1} style={{ color: tone, fontSize: 9 }}>세션 · {AUTO_LABEL[session.execution]} · {session.provider} · {shortAge(sessionActivity(session))}</Text>
+    <Text numberOfLines={1} style={{ color: tone, fontSize: 9 }}>작업 아님 · {AUTO_LABEL[session.execution]} · {session.provider} · {shortAge(sessionActivity(session))}</Text>
   </Pressable>;
 }
 
@@ -224,7 +224,9 @@ export function ProjectFlowView(props: FocusViewProps & { viewportWidth: number 
   const { colors, compact } = props;
   const lanes = useMemo(() => buildProjectLanes(props.tasks, props.liveSessions, { acknowledged: props.acknowledged }), [props.tasks, props.liveSessions, props.acknowledged]);
   if (!lanes.length) return <Empty colors={colors} title="아직 프로젝트가 없습니다" subtitle="세션이 수집되거나 작업에 프로젝트 이름을 적으면 프로젝트마다 한 줄씩 여기에 나타납니다." />;
+  const activeTasks = props.tasks.filter((task) => !task.archivedAt).length;
   const header = <View style={{ gap: 4, paddingBottom: 6 }}>
+    <Text style={{ color: colors.foreground, fontSize: 13, fontWeight: "700" }}>등록된 작업 {activeTasks}개 · 아직 작업으로 묶지 않은 세션 {props.inboxCount}개(최근 것은 점선 카드로 표시)</Text>
     <Body colors={colors} muted style={{ fontSize: 12 }}>프로젝트마다 지금 하는 일과 단계별 작업을 한 줄로 봅니다. 작업에 연결하지 않은 세션은 폴더 이름으로 자동 배치됩니다(점선 카드). "실행 중"은 "진행 중", "응답 완료"는 "검토", "권한·답변 필요"와 "오류"는 "막힘" 열에 놓입니다. {DEFAULT_RECENT_DAYS}일 넘게 활동이 없는 응답 완료 세션은 카드 대신 "조용한 세션" 개수로만 표시합니다.</Body>
   </View>;
 
